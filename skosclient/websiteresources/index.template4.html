@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DiSMI - Dizionario Settoriale</title>
+    <title>§title §description</title>
     <style>
         * {
             margin: 0;
@@ -345,7 +345,7 @@
                     const langCode = browserLang.split('-')[0].toLowerCase();
                     
                     // For now, support only 'it' and 'en', fallback to 'en'
-                    return ['it', 'en'].includes(langCode) ? langCode : 'en';
+                    return ['it', 'en','de'].includes(langCode) ? langCode : 'en';
                 } catch (error) {
                     console.warn('Error detecting browser locale:', error);
                     return 'en';
