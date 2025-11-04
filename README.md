@@ -27,12 +27,15 @@ skosclient mydictionary.ttl
 This creates a `mydictionary/` directory containing the complete web application.
 
 2. **Serve the application** locally:
+
+For testing purposes you can serve the application using python. Rember that `http.server` does not handle UTF-8 so some character might not be rendered correctly.
+
 ```bash
 cd mydictionary
 python -m http.server
 ```
 
-3. **Open in browser**: Navigate to `http://localhost:8000/`
+1. **Open in browser**: Navigate to `http://localhost:8000/`
 
 ## How It Works
 
