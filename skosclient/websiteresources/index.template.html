@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>§title §description</title>
+    <title>DiSMI - Compact View</title>
     <style>
         * {
             margin: 0;
@@ -12,241 +12,242 @@
         }
 
         body {
-            font-family: 'Times New Roman', serif;
-            line-height: 1.6;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.4;
             color: #333;
-            background-color: #fafafa;
+            background-color: #f5f5f5;
+            font-size: 14px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 20px;
+            padding: 10px;
         }
 
         header {
-            background: #fff;
-            border-bottom: 3px solid #2c5f7c;
-            margin-bottom: 30px;
-            padding: 30px 0;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            background: linear-gradient(135deg, #2c5f7c 0%, #1a4a5a 100%);
+            color: white;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
         .header-content {
-            text-align: center;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: baseline;
+            gap: 15px;
         }
 
         h1 {
-            color: #2c5f7c;
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            font-weight: normal;
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin: 0;
         }
 
         .subtitle {
-            color: #666;
-            font-style: italic;
-            font-size: 1.1rem;
-            margin-bottom: 20px;
+            font-size: 0.85rem;
+            opacity: 0.9;
         }
 
         .language-selector {
-            margin-bottom: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .language-selector label {
+            font-weight: 500;
         }
 
         .language-selector select {
-            padding: 8px 15px;
-            border: 2px solid #2c5f7c;
+            padding: 4px 8px;
+            border: 1px solid rgba(255,255,255,0.3);
             border-radius: 4px;
-            font-size: 1rem;
-            background: white;
+            font-size: 0.85rem;
+            background: rgba(255,255,255,0.95);
             color: #2c5f7c;
-            margin: 0 5px;
+            cursor: pointer;
         }
 
-        .search-section {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
+        .main-content {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 10px;
+            align-items: start;
         }
 
-        .concept-list .search-box {
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .search-box {
             position: relative;
-            margin-bottom: 20px;
-        }
-
-        .concept-list .search-box #searchInput {
-            width: 100%;
-            padding: 12px 15px;
-            font-size: 1rem;
-            border: 2px solid #ddd;
+            background: white;
+            padding: 10px;
             border-radius: 6px;
-            transition: border-color 0.3s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
         }
 
-        .concept-list .search-box #searchInput:focus {
+        #searchInput {
+            width: 100%;
+            padding: 8px 12px;
+            font-size: 0.9rem;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            transition: border-color 0.2s;
+        }
+
+        #searchInput:focus {
             outline: none;
             border-color: #2c5f7c;
         }
 
-        .concept-list .search-box #searchSuggestions {
+        #searchSuggestions {
             position: absolute;
             top: 100%;
-            left: 0;
-            right: 0;
+            left: 10px;
+            right: 10px;
             background: white;
             border: 1px solid #ddd;
             border-top: none;
-            max-height: 200px;
+            max-height: 250px;
             overflow-y: auto;
             z-index: 1000;
             display: none;
+            border-radius: 0 0 4px 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .suggestion-item {
-            padding: 12px 20px;
+            padding: 8px 12px;
             cursor: pointer;
-            border-bottom: 1px solid #eee;
+            border-bottom: 1px solid #f0f0f0;
+            font-size: 0.9rem;
         }
 
         .suggestion-item:hover,
         .suggestion-item.highlighted {
             background-color: #e8f4f8;
-            border-left: 4px solid #2c5f7c;
+            border-left: 3px solid #2c5f7c;
         }
 
         .alphabet-nav {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
             text-align: center;
-            margin-bottom: 30px;
         }
 
         .alphabet-nav button {
-            background: #2c5f7c;
-            color: white;
+            background: #f0f0f0;
+            color: #555;
             border: none;
-            padding: 8px 12px;
+            padding: 4px 8px;
             margin: 2px;
-            border-radius: 4px;
+            border-radius: 3px;
             cursor: pointer;
-            font-size: 1rem;
-            transition: background-color 0.3s;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         .alphabet-nav button:hover {
-            background-color: #1a4a5a;
+            background-color: #2c5f7c;
+            color: white;
         }
 
         .alphabet-nav button.active {
-            background-color: #4a7c9a;
-        }
-
-        .content-area {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 30px;
-            align-items: start;
+            background-color: #2c5f7c;
+            color: white;
         }
 
         .concept-list {
             background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            max-height: 600px;
-            overflow-y: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            overflow: hidden;
         }
 
-        .concept-list h3 {
+        .list-header {
+            background: #f8f9fa;
+            padding: 10px 15px;
+            border-bottom: 2px solid #e0e0e0;
+            font-weight: 600;
+            font-size: 0.9rem;
             color: #2c5f7c;
-            margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #eee;
+        }
+
+        .list-content {
+            max-height: calc(100vh - 280px);
+            overflow-y: auto;
+            padding: 5px;
+        }
+
+        /* Two-column layout for concept items */
+        .concept-items-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2px;
         }
 
         .concept-item {
-            padding: 10px 0;
-            border-bottom: 1px solid #eee;
+            padding: 8px 10px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            border-radius: 3px;
+            border-left: 3px solid transparent;
         }
 
         .concept-item:hover {
-            background-color: #f9f9f9;
-            padding-left: 10px;
+            background-color: #f8f9fa;
+            border-left-color: #2c5f7c;
         }
 
         .concept-item.selected {
             background-color: #e8f4f8;
-            padding-left: 10px;
-            border-left: 4px solid #2c5f7c;
+            border-left-color: #2c5f7c;
+            font-weight: 500;
         }
 
         .concept-detail {
             background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            min-height: 400px;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+            max-height: calc(100vh - 120px);
+            overflow-y: auto;
         }
 
         .concept-title {
             color: #2c5f7c;
-            font-size: 1.8rem;
-            margin-bottom: 20px;
+            font-size: 1.6rem;
+            margin-bottom: 15px;
             padding-bottom: 10px;
             border-bottom: 2px solid #2c5f7c;
-        }
-
-        .concept-section {
-            margin-bottom: 25px;
-        }
-
-        .section-title {
-            font-weight: bold;
-            color: #2c5f7c;
-            margin-bottom: 10px;
-            font-size: 1.1rem;
-        }
-
-        .section-content {
-            margin-left: 15px;
-            line-height: 1.7;
-        }
-
-        .relation-item {
-            background: #f8f9fa;
-            padding: 8px 12px;
-            margin: 5px 0;
-            border-left: 4px solid #2c5f7c;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-
-        .relation-item:hover {
-            background-color: #e9ecef;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #666;
-            font-style: italic;
-            padding: 50px 20px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 50px;
-            color: #666;
+            font-weight: 600;
         }
 
         .permalink {
             background: #f8f9fa;
-            border: 1px solid #ddd;
+            border: 1px solid #e0e0e0;
             border-radius: 4px;
-            padding: 10px;
-            font-size: 0.9rem;
+            padding: 8px 10px;
+            font-size: 0.8rem;
             margin-bottom: 15px;
             word-break: break-all;
         }
@@ -254,19 +255,120 @@
         .permalink code {
             background: none;
             color: #2c5f7c;
+            font-size: 0.75rem;
         }
 
-        @media (max-width: 768px) {
-            .content-area {
+        .concept-section {
+            margin-bottom: 15px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            color: #2c5f7c;
+            margin-bottom: 6px;
+            font-size: 0.95rem;
+        }
+
+        .section-content {
+            margin-left: 10px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .section-content p {
+            margin-bottom: 6px;
+        }
+
+        /* Two-column layout for relations */
+        .relations-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 6px;
+        }
+
+        .relation-item {
+            background: #f8f9fa;
+            padding: 6px 10px;
+            border-left: 3px solid #2c5f7c;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.85rem;
+            border-radius: 3px;
+        }
+
+        .relation-item:hover {
+            background-color: #e0e7ea;
+            transform: translateX(2px);
+        }
+
+        .empty-state {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 40px 20px;
+            font-size: 0.95rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Scrollbar styling */
+        .list-content::-webkit-scrollbar,
+        .concept-detail::-webkit-scrollbar,
+        #searchSuggestions::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .list-content::-webkit-scrollbar-track,
+        .concept-detail::-webkit-scrollbar-track,
+        #searchSuggestions::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        .list-content::-webkit-scrollbar-thumb,
+        .concept-detail::-webkit-scrollbar-thumb,
+        #searchSuggestions::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 3px;
+        }
+
+        .list-content::-webkit-scrollbar-thumb:hover,
+        .concept-detail::-webkit-scrollbar-thumb:hover,
+        #searchSuggestions::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
                 grid-template-columns: 1fr;
             }
             
-            h1 {
-                font-size: 2rem;
+            .concept-items-grid,
+            .relations-grid {
+                grid-template-columns: 1fr;
             }
-            
-            .concept-detail {
-                margin-top: 20px;
+
+            h1 {
+                font-size: 1.3rem;
+            }
+
+            .header-content {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .concept-items-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .relations-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -275,40 +377,39 @@
     <div class="container">
         <header>
             <div class="header-content">
-                <h1 id="pageTitle">§title</h1>
-                <div class="subtitle" id="pageSubtitle">§description</div>
+                <div class="header-left">
+                    <h1 id="pageTitle">DiSMI</h1>
+                    <div class="subtitle" id="pageSubtitle">Sectoral Dictionary</div>
+                </div>
                 <div class="language-selector">
-                    <label for="uiLanguageSelect" id="uiLanguageLabel">Interface language:</label>
-                    <select id="uiLanguageSelect">
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
-                    <label for="languageSelect" id="contentLanguageLabel">Content language:</label>
-                    <select id="languageSelect">
-                        <!-- Options will be populated by JavaScript -->
-                    </select>
+                    <label for="uiLanguageSelect" id="uiLanguageLabel">UI:</label>
+                    <select id="uiLanguageSelect"></select>
+                    <label for="languageSelect" id="contentLanguageLabel">Content:</label>
+                    <select id="languageSelect"></select>
                 </div>
             </div>
         </header>
 
-        <div class="search-section">
-            <div class="alphabet-nav" id="alphabetNav">
-                <!-- Le lettere verranno generate dinamicamente -->
-            </div>
-        </div>
-
-        <div class="content-area">
-            <div class="concept-list">
+        <div class="main-content">
+            <div class="left-panel">
                 <div class="search-box">
                     <input type="text" id="searchInput" placeholder="Search for a concept...">
                     <div id="searchSuggestions"></div>
                 </div>
-                <h3 id="listTitle">Select a letter or search for a concept</h3>
-                <div id="conceptItems"></div>
+
+                <div class="alphabet-nav" id="alphabetNav"></div>
+
+                <div class="concept-list">
+                    <div class="list-header" id="listTitle">Select a letter or search</div>
+                    <div class="list-content">
+                        <div class="concept-items-grid" id="conceptItems"></div>
+                    </div>
+                </div>
             </div>
 
             <div class="concept-detail">
                 <div class="empty-state" id="emptyState">
-                    Select a concept from the list to view its details
+                    Select a concept to view its details
                 </div>
                 <div id="conceptDetail" style="display: none;"></div>
             </div>
@@ -318,8 +419,8 @@
     <script>
         class SKOSClient {
             constructor() {
-                this.currentLanguage = 'en'; // Default content language
-                this.currentUILanguage = 'en'; // Will be set by detectBrowserLocale
+                this.currentLanguage = null;
+                this.currentUILanguage = 'en';
                 this.concepts = {};
                 this.labelsToConceptId = {};
                 this.metadata = {};
@@ -329,24 +430,16 @@
                 this.currentSuggestions = [];
                 this.highlightedIndex = -1;
 
-                // Detect browser locale after initialization
                 this.currentUILanguage = this.detectBrowserLocale();
-
                 this.init();
             }
 
             detectBrowserLocale() {
                 try {
-                    // Get browser language, fallback to English
                     const browserLang = navigator.language || navigator.userLanguage;
                     if (!browserLang) return 'en';
-                    
-                    // Extract just the language code (e.g., 'it' from 'it-IT')
                     const langCode = browserLang.split('-')[0].toLowerCase();
-                    
                     console.log(`Detected browser locale: ${langCode}`);
-                    
-                    // Return the detected language code (no restrictions)
                     return langCode;
                 } catch (error) {
                     console.warn('Error detecting browser locale:', error);
@@ -356,50 +449,37 @@
 
             getLanguageDisplayName(languageCode, displayLanguage = null) {
                 try {
-                    // Use the UI language for displaying language names, or fallback to the provided language
                     const displayLang = displayLanguage || this.currentUILanguage || 'en';
                     const displayNames = new Intl.DisplayNames([displayLang], { type: 'language' });
                     return displayNames.of(languageCode);
                 } catch (error) {
                     console.warn(`Could not get display name for ${languageCode}:`, error);
-                    // Fallback to language code if Intl.DisplayNames fails
                     return languageCode.toUpperCase();
                 }
             }
 
             async init() {
-                // Parse URL parameters first
                 this.parseURLParameters();
-                
                 await this.loadTranslations();
                 await this.loadMetadata();
                 await this.loadLanguageData(this.currentLanguage);
                 this.setupEventListeners();
                 this.generateAlphabet();
-                this.updateUI(); // Call after metadata is loaded
-
-                // Handle direct concept loading from URL
+                this.updateUI();
                 await this.handleURLConcept();
             }
 
             parseURLParameters() {
                 const urlParams = new URLSearchParams(window.location.search);
-                
-                // Get UI language from URL, fallback to auto-detected
                 const uiLang = urlParams.get('ui') || urlParams.get('uilang');
                 if (uiLang) {
                     this.currentUILanguage = uiLang;
                 }
-
-                // Get content language from URL, keep default if not specified
                 const contentLang = urlParams.get('lang');
                 if (contentLang) {
                     this.currentLanguage = contentLang;
                 }
-
-                // Store concept ID for later loading
                 this.urlConceptId = urlParams.get('concept') || urlParams.get('id');
-                
                 console.log('Parsed URL params:', {
                     uiLang: this.currentUILanguage,
                     contentLang: this.currentLanguage,
@@ -409,30 +489,22 @@
 
             async handleURLConcept() {
                 if (this.urlConceptId && this.concepts[this.urlConceptId]) {
-                    // Update the URL to remove the concept parameter after loading
                     const url = new URL(window.location);
                     url.searchParams.delete('concept');
                     url.searchParams.delete('id');
                     window.history.replaceState({}, '', url);
-                    
-                    // Load the concept
                     this.selectedConcept = this.urlConceptId;
                     this.displayConceptDetail(this.concepts[this.urlConceptId]);
-                    
-                    // Update the search input with the concept's preferred label
                     document.getElementById('searchInput').value = this.concepts[this.urlConceptId].prefLabel;
                 }
             }
 
             async loadTranslations() {
                 try {
-                    // Ensure we have a valid UI language
                     if (!this.currentUILanguage) {
                         this.currentUILanguage = 'en';
                     }
-
                     console.log(`Attempting to load translations for: ${this.currentUILanguage}`);
-                    
                     const response = await fetch(`ui_translations_${this.currentUILanguage}.json`);
                     if (!response.ok) {
                         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -442,15 +514,14 @@
                 } catch (error) {
                     console.error(`Error loading ${this.currentUILanguage} translations:`, error);
                     console.log('Falling back to English translations');
-                    // Fallback to English translations
                     this.translations = {
-                        "pageTitle": "Page Title example",
-                        "pageSubtitle": "Page subtitle",
-                        "uiLanguageLabel": "Interface language:",
-                        "contentLanguageLabel": "Content language:",
+                        "pageTitle": "DiSMI",
+                        "pageSubtitle": "Sectoral Dictionary of Information Sciences",
+                        "uiLanguageLabel": "UI:",
+                        "contentLanguageLabel": "Content:",
                         "searchPlaceholder": "Search for a concept...",
-                        "listTitle": "Select a letter or search for a concept",
-                        "emptyState": "Select a concept from the list to view its details",
+                        "listTitle": "Select a letter or search",
+                        "emptyState": "Select a concept to view its details",
                         "loading": "Loading...",
                         "loadingError": "Error loading data",
                         "noConceptsFound": "No concepts found",
@@ -471,27 +542,21 @@
             }
 
             updateUI() {
-                // Update page title and subtitle if provided in metadata
                 if (this.metadata.title && typeof this.metadata.title === 'string') {
                     document.getElementById('pageTitle').textContent = this.metadata.title;
                 } else {
                     document.getElementById('pageTitle').textContent = this.translations.pageTitle || 'DiSMI';
                 }
-
                 if (this.metadata.description && typeof this.metadata.description === 'string') {
                     document.getElementById('pageSubtitle').textContent = this.metadata.description;
                 } else {
-                    document.getElementById('pageSubtitle').textContent = this.translations.pageSubtitle || 'Sectoral Dictionary of Information Sciences';
+                    document.getElementById('pageSubtitle').textContent = this.translations.pageSubtitle || 'Sectoral Dictionary';
                 }
-
-                // Update other UI elements
-                document.getElementById('uiLanguageLabel').textContent = this.translations.uiLanguageLabel || 'Interface language:';
-                document.getElementById('contentLanguageLabel').textContent = this.translations.contentLanguageLabel || 'Content language:';
-                document.getElementById('searchInput').placeholder = this.translations.searchPlaceholder || 'Search for a concept...';
-                document.getElementById('listTitle').textContent = this.translations.listTitle || 'Select a letter or search for a concept';
-                document.getElementById('emptyState').textContent = this.translations.emptyState || 'Select a concept from the list to view its details';
-
-                // Update HTML lang attribute
+                document.getElementById('uiLanguageLabel').textContent = this.translations.uiLanguageLabel || 'UI:';
+                document.getElementById('contentLanguageLabel').textContent = this.translations.contentLanguageLabel || 'Content:';
+                document.getElementById('searchInput').placeholder = this.translations.searchPlaceholder || 'Search...';
+                document.getElementById('listTitle').textContent = this.translations.listTitle || 'Select a letter or search';
+                document.getElementById('emptyState').textContent = this.translations.emptyState || 'Select a concept';
                 document.documentElement.lang = this.currentUILanguage;
             }
 
@@ -500,46 +565,45 @@
                     const response = await fetch('thesaurus_metadata.json');
                     this.metadata = await response.json();
                     console.log('Loaded metadata:', this.metadata);
+                    if (!this.currentLanguage) {
+                        const availableLanguages = this.metadata.available_languages || this.metadata.languages || ['en'];
+                        if (availableLanguages.length > 0 && typeof availableLanguages[0] === 'object') {
+                            this.currentLanguage = availableLanguages[0].code;
+                        } else {
+                            this.currentLanguage = availableLanguages[0];
+                        }
+                        console.log(`Default content language set to: ${this.currentLanguage}`);
+                    }
                     this.populateLanguageSelectors();
                 } catch (error) {
                     console.error('Error loading metadata:', error);
-                    // Fallback metadata structure with just language codes
                     this.metadata = { 
-                        title: "Example title",
-                        description: "Test description",
+                        title: "DiSMI",
+                        description: "Sectoral Dictionary",
                         available_languages: ['en', 'it'],
                         ui_languages: ['en', 'it']
                     };
+                    if (!this.currentLanguage) {
+                        this.currentLanguage = 'en';
+                    }
                     console.log('Using fallback metadata');
                     this.populateLanguageSelectors();
                 }
             }
 
             populateLanguageSelectors() {
-                console.log('Populating language selectors with metadata:', this.metadata);
-                
-                // Check if DOM elements exist
+                console.log('Populating language selectors');
                 const contentSelector = document.getElementById('languageSelect');
                 const uiSelector = document.getElementById('uiLanguageSelect');
-                
                 if (!contentSelector || !uiSelector) {
-                    console.error('Language selector elements not found in DOM');
+                    console.error('Language selector elements not found');
                     return;
                 }
-                
-                // Populate content language selector
                 contentSelector.innerHTML = '';
-                
-                // Handle both old format (objects with name/code) and new format (array of strings)
                 let availableLanguages = this.metadata.available_languages || this.metadata.languages || ['en'];
-                
-                // Convert old format to new format if needed
                 if (availableLanguages.length > 0 && typeof availableLanguages[0] === 'object') {
                     availableLanguages = availableLanguages.map(lang => lang.code);
                 }
-                
-                console.log('Available languages (codes):', availableLanguages);
-                
                 availableLanguages.forEach(langCode => {
                     const option = document.createElement('option');
                     option.value = langCode;
@@ -548,22 +612,12 @@
                         option.selected = true;
                     }
                     contentSelector.appendChild(option);
-                    console.log(`Added content language option: ${option.textContent} (${langCode})`);
                 });
-
-                // Populate UI language selector  
                 uiSelector.innerHTML = '';
-                
-                // Handle both old format and new format
                 let uiLanguages = this.metadata.ui_languages || this.metadata.available_languages || this.metadata.languages || ['en', 'it'];
-                
-                // Convert old format to new format if needed
                 if (uiLanguages.length > 0 && typeof uiLanguages[0] === 'object') {
                     uiLanguages = uiLanguages.map(lang => lang.code);
                 }
-                
-                console.log('UI languages (codes):', uiLanguages);
-                
                 uiLanguages.forEach(langCode => {
                     const option = document.createElement('option');
                     option.value = langCode;
@@ -572,87 +626,63 @@
                         option.selected = true;
                     }
                     uiSelector.appendChild(option);
-                    console.log(`Added UI language option: ${option.textContent} (${langCode})`);
                 });
-
-                console.log('Language selectors populated successfully');
-                console.log('Content selector options count:', contentSelector.options.length);
-                console.log('UI selector options count:', uiSelector.options.length);
             }
 
             async loadLanguageData(languageCode) {
                 try {
-                    // Ensure we have a valid language code
                     if (!languageCode) {
                         languageCode = 'en';
                         this.currentLanguage = 'en';
                     }
-
                     console.log(`Loading data for language: ${languageCode}`);
-                    
                     const loadingText = this.translations.loading || 'Loading...';
-                    document.getElementById('conceptItems').innerHTML = `<div class="loading">${loadingText}</div>`;
-                    
+                    document.getElementById('conceptItems').innerHTML = `<div class="loading" style="grid-column: 1/-1">${loadingText}</div>`;
                     const [conceptsResponse, labelsResponse] = await Promise.all([
                         fetch(`concepts_${languageCode}.json`),
                         fetch(`labels_to_concept_${languageCode}.json`)
                     ]);
-
                     if (!conceptsResponse.ok) {
                         throw new Error(`Failed to load concepts_${languageCode}.json: ${conceptsResponse.status}`);
                     }
                     if (!labelsResponse.ok) {
                         throw new Error(`Failed to load labels_to_concept_${languageCode}.json: ${labelsResponse.status}`);
                     }
-
                     this.concepts = await conceptsResponse.json();
                     this.labelsToConceptId = await labelsResponse.json();
-                    
-                    console.log(`Loaded ${Object.keys(this.concepts).length} concepts and ${Object.keys(this.labelsToConceptId).length} labels`);
-                    
+                    console.log(`Loaded ${Object.keys(this.concepts).length} concepts`);
                     this.clearConceptList();
                     this.clearConceptDetail();
                 } catch (error) {
                     console.error('Error loading language data:', error);
                     const errorText = this.translations.loadingError || 'Error loading data';
-                    document.getElementById('conceptItems').innerHTML = `<div class="empty-state">${errorText}<br><small>${error.message}</small></div>`;
+                    document.getElementById('conceptItems').innerHTML = `<div class="empty-state" style="grid-column: 1/-1">${errorText}<br><small>${error.message}</small></div>`;
                 }
             }
 
             setupEventListeners() {
-                // UI Language selector
                 document.getElementById('uiLanguageSelect').addEventListener('change', async (e) => {
                     this.currentUILanguage = e.target.value;
                     await this.loadTranslations();
                     this.updateUI();
-                    // Repopulate selectors to show language names in the new UI language
                     this.populateLanguageSelectors();
                 });
-
-                // Content Language selector
                 document.getElementById('languageSelect').addEventListener('change', async (e) => {
                     this.currentLanguage = e.target.value;
                     await this.loadLanguageData(this.currentLanguage);
                 });
-
-                // Search input
                 const searchInput = document.getElementById('searchInput');
-                
                 searchInput.addEventListener('input', (e) => {
                     this.handleSearch(e.target.value);
                 });
-
                 searchInput.addEventListener('keydown', (e) => {
                     this.handleSearchKeydown(e);
                 });
-
                 searchInput.addEventListener('focus', () => {
                     if (searchInput.value && this.currentSuggestions.length > 0) {
                         document.getElementById('searchSuggestions').style.display = 'block';
                     }
                 });
-
-                // Hide suggestions when clicking outside
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.search-box')) {
                         this.hideSuggestions();
@@ -665,7 +695,7 @@
                 const url = new URL(baseUrl);
                 url.searchParams.set('concept', conceptId);
                 url.searchParams.set('lang', this.currentLanguage);
-                if (this.currentUILanguage !== 'it') {
+                if (this.currentUILanguage !== 'en') {
                     url.searchParams.set('ui', this.currentUILanguage);
                 }
                 return url.toString();
@@ -677,17 +707,14 @@
                     this.clearConceptDetail();
                     return;
                 }
-
                 this.showSuggestions(query);
             }
 
             handleSearchKeydown(e) {
                 const container = document.getElementById('searchSuggestions');
-                
                 if (container.style.display === 'none' || this.currentSuggestions.length === 0) {
                     return;
                 }
-
                 switch(e.key) {
                     case 'ArrowDown':
                         e.preventDefault();
@@ -727,36 +754,29 @@
             showSuggestions(query) {
                 const suggestions = this.findMatchingLabels(query.toLowerCase());
                 const container = document.getElementById('searchSuggestions');
-                
                 if (suggestions.length === 0) {
                     this.hideSuggestions();
                     return;
                 }
-
                 this.currentSuggestions = suggestions.slice(0, 10);
                 this.highlightedIndex = 0;
-
                 container.innerHTML = '';
                 this.currentSuggestions.forEach((label, index) => {
                     const item = document.createElement('div');
                     item.className = 'suggestion-item';
                     item.textContent = label;
-                    
                     item.addEventListener('click', () => {
                         this.selectConceptByLabel(label);
                         document.getElementById('searchInput').value = label;
                         this.hideSuggestions();
                     });
-
                     item.addEventListener('mouseenter', () => {
                         this.highlightedIndex = index;
                         this.updateHighlight();
                         this.updateConceptDetail();
                     });
-
                     container.appendChild(item);
                 });
-
                 container.style.display = 'block';
                 this.updateHighlight();
                 this.updateConceptDetail();
@@ -797,7 +817,6 @@
                 const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
                 const nav = document.getElementById('alphabetNav');
                 nav.innerHTML = '';
-
                 alphabet.forEach(letter => {
                     const button = document.createElement('button');
                     button.textContent = letter;
@@ -810,12 +829,10 @@
                 document.querySelectorAll('.alphabet-nav button').forEach(btn => {
                     btn.classList.remove('active');
                 });
-
                 event.target.classList.add('active');
-
                 this.currentFilter = letter.toLowerCase();
                 const matchingConcepts = this.getConceptsByLetter(letter);
-                const title = `${this.translations.conceptsStartingWith || 'Concetti che iniziano con'} "${letter}"`;
+                const title = `${this.translations.conceptsStartingWith || 'Concepts starting with'} "${letter}"`;
                 this.displayConceptList(matchingConcepts, title);
             }
 
@@ -832,16 +849,13 @@
             displayConceptList(concepts, title) {
                 const titleElement = document.getElementById('listTitle');
                 const itemsContainer = document.getElementById('conceptItems');
-
                 titleElement.textContent = title;
                 itemsContainer.innerHTML = '';
-
                 if (concepts.length === 0) {
-                    const noResultsText = this.translations.noConceptsFound || 'Nessun concetto trovato';
-                    itemsContainer.innerHTML = `<div class="empty-state">${noResultsText}</div>`;
+                    const noResultsText = this.translations.noConceptsFound || 'No concepts found';
+                    itemsContainer.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">${noResultsText}</div>`;
                     return;
                 }
-
                 concepts.forEach(({ label, conceptId }) => {
                     const item = document.createElement('div');
                     item.className = 'concept-item';
@@ -854,17 +868,15 @@
             selectConcept(label, itemElement = null) {
                 const conceptId = this.labelsToConceptId[label];
                 if (!conceptId || !this.concepts[conceptId]) {
-                    console.error('Concetto non trovato:', label);
+                    console.error('Concept not found:', label);
                     return;
                 }
-
                 document.querySelectorAll('.concept-item').forEach(item => {
                     item.classList.remove('selected');
                 });
                 if (itemElement) {
                     itemElement.classList.add('selected');
                 }
-
                 this.selectedConcept = conceptId;
                 this.displayConceptDetail(this.concepts[conceptId]);
             }
@@ -872,13 +884,11 @@
             selectConceptByLabel(label, hideSuggestions = true) {
                 const conceptId = this.labelsToConceptId[label];
                 if (!conceptId || !this.concepts[conceptId]) {
-                    console.error('Concetto non trovato:', label);
+                    console.error('Concept not found:', label);
                     return;
                 }
-
                 this.selectedConcept = conceptId;
                 this.displayConceptDetail(this.concepts[conceptId]);
-                
                 if (hideSuggestions) {
                     this.hideSuggestions();
                 }
@@ -887,28 +897,24 @@
             displayConceptDetail(concept) {
                 const emptyState = document.getElementById('emptyState');
                 const detailContainer = document.getElementById('conceptDetail');
-
                 emptyState.style.display = 'none';
                 detailContainer.style.display = 'block';
-
                 let html = `<div class="concept-title">${concept.prefLabel}</div>`;
-
-                // Add permalink
+                
                 if (this.selectedConcept) {
                     const permalink = this.generatePermalink(this.selectedConcept);
                     html += `
                         <div class="permalink">
-                            <strong>${this.translations.permalink || 'Link diretto'}:</strong><br>
+                            <strong>${this.translations.permalink || 'Permalink'}:</strong><br>
                             <code>${permalink}</code>
                         </div>
                     `;
                 }
 
-                // Definition
                 if (concept.definition && concept.definition.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.definition || 'Definizione'}:</div>
+                            <div class="section-title">${this.translations.definition || 'Definition'}:</div>
                             <div class="section-content">
                                 ${concept.definition.map(def => `<p>${def}</p>`).join('')}
                             </div>
@@ -916,11 +922,10 @@
                     `;
                 }
 
-                // Alternative labels
                 if (concept.altLabel && concept.altLabel.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.altLabels || 'Etichette alternative'}:</div>
+                            <div class="section-title">${this.translations.altLabels || 'Alternative labels'}:</div>
                             <div class="section-content">
                                 ${concept.altLabel.join(', ')}
                             </div>
@@ -928,48 +933,50 @@
                     `;
                 }
 
-                // Broader concepts
                 if (concept.broaderConcept && concept.broaderConcept.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.broaderConcepts || 'Concetti più generali'}:</div>
+                            <div class="section-title">${this.translations.broaderConcepts || 'Broader concepts'}:</div>
                             <div class="section-content">
-                                ${this.renderConceptRelations(concept.broaderConcept)}
+                                <div class="relations-grid">
+                                    ${this.renderConceptRelations(concept.broaderConcept)}
+                                </div>
                             </div>
                         </div>
                     `;
                 }
 
-                // Narrower concepts
                 if (concept.narrowerConcept && concept.narrowerConcept.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.narrowerConcepts || 'Concetti più specifici'}:</div>
+                            <div class="section-title">${this.translations.narrowerConcepts || 'Narrower concepts'}:</div>
                             <div class="section-content">
-                                ${this.renderConceptRelations(concept.narrowerConcept)}
+                                <div class="relations-grid">
+                                    ${this.renderConceptRelations(concept.narrowerConcept)}
+                                </div>
                             </div>
                         </div>
                     `;
                 }
 
-                // Related concepts
                 if (concept.related && concept.related.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.relatedConcepts || 'Concetti correlati'}:</div>
+                            <div class="section-title">${this.translations.relatedConcepts || 'Related concepts'}:</div>
                             <div class="section-content">
-                                ${this.renderConceptRelations(concept.related)}
+                                <div class="relations-grid">
+                                    ${this.renderConceptRelations(concept.related)}
+                                </div>
                             </div>
                         </div>
                     `;
                 }
 
-                // Notes
                 const noteFields = [
-                    { field: 'note', label: this.translations.notes || 'Note' },
-                    { field: 'scopeNote', label: this.translations.scopeNotes || 'Note di ambito' },
-                    { field: 'historyNote', label: this.translations.historyNotes || 'Note storiche' },
-                    { field: 'editorialNote', label: this.translations.editorialNotes || 'Note editoriali' }
+                    { field: 'note', label: this.translations.notes || 'Notes' },
+                    { field: 'scopeNote', label: this.translations.scopeNotes || 'Scope notes' },
+                    { field: 'historyNote', label: this.translations.historyNotes || 'History notes' },
+                    { field: 'editorialNote', label: this.translations.editorialNotes || 'Editorial notes' }
                 ];
 
                 noteFields.forEach(({ field, label }) => {
@@ -985,11 +992,10 @@
                     }
                 });
 
-                // Examples
                 if (concept.example && concept.example.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.examples || 'Esempi'}:</div>
+                            <div class="section-title">${this.translations.examples || 'Examples'}:</div>
                             <div class="section-content">
                                 ${concept.example.map(ex => `<p>${ex}</p>`).join('')}
                             </div>
@@ -999,7 +1005,6 @@
 
                 detailContainer.innerHTML = html;
 
-                // Add click listeners to relation items
                 document.querySelectorAll('.relation-item').forEach(item => {
                     item.addEventListener('click', () => {
                         const conceptId = item.dataset.conceptId;
@@ -1007,7 +1012,6 @@
                         if (conceptData) {
                             this.selectedConcept = conceptId;
                             this.displayConceptDetail(conceptData);
-                            // Update search input with new concept
                             document.getElementById('searchInput').value = conceptData.prefLabel;
                         }
                     });
@@ -1025,19 +1029,18 @@
                         const conceptData = this.concepts[conceptId];
                         label = conceptData ? conceptData.prefLabel : conceptId;
                     }
-
                     return `<div class="relation-item" data-concept-id="${conceptId}">${label}</div>`;
                 }).join('');
             }
 
             clearConceptList() {
-                const defaultTitle = this.translations.listTitle || 'Seleziona una lettera o cerca un concetto';
+                const defaultTitle = this.translations.listTitle || 'Select a letter or search';
                 document.getElementById('listTitle').textContent = defaultTitle;
                 document.getElementById('conceptItems').innerHTML = '';
             }
 
             clearConceptDetail() {
-                const emptyText = this.translations.emptyState || 'Seleziona un concetto dalla lista per visualizzarne i dettagli';
+                const emptyText = this.translations.emptyState || 'Select a concept';
                 document.getElementById('emptyState').textContent = emptyText;
                 document.getElementById('emptyState').style.display = 'block';
                 document.getElementById('conceptDetail').style.display = 'none';
@@ -1045,7 +1048,6 @@
             }
         }
 
-        // Initialize the application
         document.addEventListener('DOMContentLoaded', () => {
             console.log('DOM fully loaded, initializing SKOSClient');
             new SKOSClient();
@@ -1053,3 +1055,4 @@
     </script>
 </body>
 </html>
+                
