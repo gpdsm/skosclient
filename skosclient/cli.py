@@ -133,7 +133,7 @@ def main():
         for ui_lang in ["en","it","de"]:
             name = f"ui_translations_{ui_lang}.json"
             translation = resources.files("skosclient.websiteresources").joinpath(name).read_text(encoding='utf-8')
-            (output_path / name).write_text(translation)
+            (output_path / name).write_text(translation,encoding="utf-8")
         # Copy other static files without templating
         # for static_file in ["script.js", "style.css"]:
         #    tpl_text = resources.files("skosclient.websiteresources").joinpath(name).read_text(encoding='utf-8')
