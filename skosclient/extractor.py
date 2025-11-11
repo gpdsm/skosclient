@@ -165,16 +165,7 @@ class SKOSExtractor:
                     return graph
                 except Exception:
                     continue
-            
-            # Try auto-detection
-            try:
-                graph = Graph()
-                graph.parse(file_uri)
-                self.log("Successfully parsed with auto-detection", "INFO")
-                return graph
-            except Exception as final_error:
-                raise ValueError(f"Unable to parse file {input_file}: {final_error}")
-    
+              
     def _extract_metadata(self, languages: List[str], no_lang_analysis: Dict, input_file: str) -> Dict:
         """Extract thesaurus metadata"""
         metadata = {
