@@ -148,8 +148,8 @@
                     console.error(`Error loading ${this.currentUILanguage} translations:`, error);
                     console.log('Falling back to English translations');
                     this.translations = {
-                        "pageTitle": "DiSMI",
-                        "pageSubtitle": "Sectoral Dictionary of Information Sciences",
+                        "pageTitle": "No title found",
+                        "pageSubtitle": "No description found",
                         "uiLanguageLabel": "UI:",
                         "contentLanguageLabel": "Content:",
                         "searchPlaceholder": "Search for a concept...",
@@ -175,23 +175,51 @@
             }
 
             updateUI() {
-                if (this.metadata.title && typeof this.metadata.title === 'string') {
-                    document.getElementById('pageTitle').textContent = this.metadata.title;
-                } else {
-                    document.getElementById('pageTitle').textContent = this.translations.pageTitle || 'DiSMI';
+                const titleEl = document.getElementById('pageTitle');
+                const subtitleEl = document.getElementById('pageSubtitle');
+            
+                // --- TITLE ---
+                let title = null;
+                if (this.metadata && this.metadata.title && typeof this.metadata.title === 'object') {
+                    title =
+                        this.metadata.title[this.currentLanguage] ||
+                        this.metadata.title[this.currentUILanguage] ||
+                        this.metadata.title["no-lang"] ||
+                        null;
                 }
-                if (this.metadata.description && typeof this.metadata.description === 'string') {
-                    document.getElementById('pageSubtitle').textContent = this.metadata.description;
-                } else {
-                    document.getElementById('pageSubtitle').textContent = this.translations.pageSubtitle || 'Sectoral Dictionary';
+                titleEl.textContent = title || this.translations.pageTitle || "No title found";
+            
+                // --- SUBTITLE / DESCRIPTION ---
+                let description = null;
+                if (this.metadata && this.metadata.description && typeof this.metadata.description === 'object') {
+                    description =
+                        this.metadata.description[this.currentLanguage] ||
+                        this.metadata.description[this.currentUILanguage] ||
+                        this.metadata.description["no-lang"] ||
+                        null;
                 }
-                document.getElementById('uiLanguageLabel').textContent = this.translations.uiLanguageLabel || 'UI:';
-                document.getElementById('contentLanguageLabel').textContent = this.translations.contentLanguageLabel || 'Content:';
-                document.getElementById('searchInput').placeholder = this.translations.searchPlaceholder || 'Search...';
-                document.getElementById('listTitle').textContent = this.translations.listTitle || 'Select a letter or search';
-                document.getElementById('emptyState').textContent = this.translations.emptyState || 'Select a concept';
-                document.documentElement.lang = this.currentUILanguage;
+                subtitleEl.textContent = description || this.translations.pageSubtitle || "";
+            
+                // --- OTHER LABELS ---
+                document.getElementById('uiLanguageLabel').textContent =
+                    this.translations.uiLanguageLabel || 'UI:';
+            
+                document.getElementById('contentLanguageLabel').textContent =
+                    this.translations.contentLanguageLabel || 'Content:';
+            
+                document.getElementById('searchInput').placeholder =
+                    this.translations.searchPlaceholder || 'Search...';
+            
+                document.getElementById('listTitle').textContent =
+                    this.translations.listTitle || 'Select a letter or search';
+            
+                document.getElementById('emptyState').textContent =
+                    this.translations.emptyState || 'Select a concept';
+            
+                // Set <html lang="">
+                document.documentElement.lang = this.currentUILanguage || 'en';
             }
+            
 
             async loadMetadata() {
                 try {
@@ -211,8 +239,8 @@
                 } catch (error) {
                     console.error('Error loading metadata:', error);
                     this.metadata = { 
-                        title: "DiSMI",
-                        description: "Sectoral Dictionary",
+                        title: "Untitled (no metadata found)",
+                        description: "No description available.",
                         available_languages: ['en', 'it'],
                         ui_languages: ['en', 'it']
                     };

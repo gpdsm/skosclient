@@ -182,10 +182,19 @@ class SKOSExtractor:
             "source_file": Path(input_file).name,
             "no_lang_analysis": no_lang_analysis
         }
+        schemes = set(self.graph.subjects(predicate=self.skos.hasTopConcept))
+
+        # fallback: any resource typed as ConceptScheme
+        if not schemes:
+            schemes = set(self.graph.subjects(predicate=self.graph.namespace_manager.compute_qname("rdf:type")[1],
+                                            object=self.skos.ConceptScheme))
+
+        # fallback: from topConceptOf inverse relation
+        if not schemes:
+            for subj, _, scheme in self.graph.triples((None, self.skos.topConceptOf, None)):
+                schemes.add(scheme)
         
-        # Extract scheme metadata
-        for scheme in self.graph.subjects(predicate=self.skos.hasTopConcept):
-            # Titles
+        for scheme in schemes:
             for title in self.graph.objects(scheme, self.dc.title):
                 if isinstance(title, Literal):
                     lang = title.language or "no-lang"
@@ -277,6 +286,7 @@ class SKOSExtractor:
             for o in self.graph.objects(uri, self.skos.prefLabel):
                 if isinstance(o, Literal) and o.language is None:
                     label_str = str(o)
+                    # we might consider using p+label_str to indicate is a prefLable
                     concepts[concept_id]["prefLabel"] = label_str
                     self._add_label_to_concept(label_str, concept_id, labels_to_concept)
                     found_label = True
