@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import Dict, List, Optional, Set, Tuple, Any
 
 from rdflib import Graph, Literal, URIRef
-from rdflib.namespace import SKOS, DCTERMS, DC
+from rdflib.namespace import SKOS, DCTERMS, DC, RDF
 
 from .utils import detect_base_uri, detect_languages, analyze_no_lang_literals
 
@@ -182,39 +182,29 @@ class SKOSExtractor:
             "source_file": Path(input_file).name,
             "no_lang_analysis": no_lang_analysis
         }
-        schemes = set(self.graph.subjects(predicate=self.skos.hasTopConcept))
-
-        # fallback: any resource typed as ConceptScheme
-        if not schemes:
-            schemes = set(self.graph.subjects(predicate=self.graph.namespace_manager.compute_qname("rdf:type")[1],
-                                            object=self.skos.ConceptScheme))
-
-        # fallback: from topConceptOf inverse relation
-        if not schemes:
-            for subj, _, scheme in self.graph.triples((None, self.skos.topConceptOf, None)):
-                schemes.add(scheme)
+        # SIMPLIFIED: Find all skos:ConceptScheme directly
+        schemes = list(self.graph.subjects(predicate=RDF.type, object=self.skos.ConceptScheme))
         
+        # DEBUG: provo a veder...
+        print(f"Found {len(schemes)} concept schemes")
         for scheme in schemes:
-            for title in self.graph.objects(scheme, self.dc.title):
-                if isinstance(title, Literal):
-                    lang = title.language or "no-lang"
-                    metadata["title"][lang] = str(title)
+            print(f"Scheme: {scheme}")
+            print(f"Number of schemes found: {len(schemes)}")
+  
+        for scheme in schemes:
+        # Extract titles from all possible predicates
+            for title_pred in [self.dc.title, self.dcterms.title]:
+                for title in self.graph.objects(scheme, title_pred):
+                    if isinstance(title, Literal):
+                        lang = title.language or "no-lang"
+                        metadata["title"][lang] = str(title)
             
-            for title in self.graph.objects(scheme, self.dcterms.title):
-                if isinstance(title, Literal):
-                    lang = title.language or "no-lang"
-                    metadata["title"][lang] = str(title)
-            
-            # Descriptions
-            for desc in self.graph.objects(scheme, self.dc.description):
-                if isinstance(desc, Literal):
-                    lang = desc.language or "no-lang"
-                    metadata["description"][lang] = str(desc)
-            
-            for desc in self.graph.objects(scheme, self.dcterms.description):
-                if isinstance(desc, Literal):
-                    lang = desc.language or "no-lang"
-                    metadata["description"][lang] = str(desc)
+            # Extract descriptions from all possible predicates
+            for desc_pred in [self.dc.description, self.dcterms.description]:
+                for desc in self.graph.objects(scheme, desc_pred):
+                    if isinstance(desc, Literal):
+                        lang = desc.language or "no-lang"
+                        metadata["description"][lang] = str(desc)
             
             # Other metadata
             for creator in self.graph.objects(scheme, self.dcterms.creator):
@@ -277,7 +267,7 @@ class SKOSExtractor:
             if isinstance(o, Literal) and o.language == lang:
                 label_str = str(o)
                 concepts[concept_id]["prefLabel"] = label_str
-                self._add_label_to_concept(label_str, concept_id, labels_to_concept)
+                self._add_label_to_concept("p"+label_str, concept_id, labels_to_concept)
                 found_label = True
                 break
         
@@ -288,7 +278,7 @@ class SKOSExtractor:
                     label_str = str(o)
                     # we might consider using p+label_str to indicate is a prefLable
                     concepts[concept_id]["prefLabel"] = label_str
-                    self._add_label_to_concept(label_str, concept_id, labels_to_concept)
+                    self._add_label_to_concept("p"+label_str, concept_id, labels_to_concept)
                     found_label = True
                     break
         
@@ -296,9 +286,9 @@ class SKOSExtractor:
         if not found_label:
             for o in self.graph.objects(uri, self.skos.prefLabel):
                 if isinstance(o, Literal):
-                    label_str = str(o)
+                    label_str = str(o) # we use p to indicate is a prefLabel
                     concepts[concept_id]["prefLabel"] = label_str
-                    self._add_label_to_concept(label_str, concept_id, labels_to_concept)
+                    self._add_label_to_concept("p"+label_str, concept_id, labels_to_concept)
                     found_label = True
                     break
         
@@ -313,10 +303,13 @@ class SKOSExtractor:
             for o in self.graph.objects(uri, label_type):
                 if isinstance(o, Literal):
                     if o.language == lang or o.language is None:
-                        label_str = str(o)
                         if label_type == self.skos.altLabel:
-                            concepts[concept_id]["altLabel"].add(label_str)
-                        self._process_comma_separated_labels(label_str, concept_id, labels_to_concept)
+                            concepts[concept_id]["altLabel"].add(str(o))
+                            label_str_ = "a"+str(o)
+                        else:
+                            label_str_ = "h"+str(o)
+                        self._process_comma_separated_labels(label_str_, concept_id, labels_to_concept)
+
     
     def _extract_relations(self, uri: URIRef, concept_id: str, concepts: Dict) -> None:
         """Extract hierarchical and associative relations"""
@@ -506,9 +499,11 @@ class SKOSExtractor:
     def _process_comma_separated_labels(self, label_str: str, concept_id: str, labels_dict: Dict) -> None:
         """Process comma-separated labels into individual entries"""
         if ',' in label_str:
+            typeLabel = label_str[0]
+            label_str = label_str[1:]
             individual_labels = [label.strip() for label in label_str.split(',')]
             for individual_label in individual_labels:
                 if individual_label:
-                    self._add_label_to_concept(individual_label, concept_id, labels_dict)
+                    self._add_label_to_concept(typeLabel+individual_label, concept_id, labels_dict)
         else:
             self._add_label_to_concept(label_str, concept_id, labels_dict)

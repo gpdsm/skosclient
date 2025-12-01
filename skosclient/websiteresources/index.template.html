@@ -399,7 +399,7 @@
                         e.preventDefault();
                         if (this.highlightedIndex >= 0) {
                             const selectedLabel = this.currentSuggestions[this.highlightedIndex];
-                            document.getElementById('searchInput').value = selectedLabel;
+                            document.getElementById('searchInput').value = selectedLabel.substring(1);
                             this.hideSuggestions();
                         }
                         break;
@@ -425,17 +425,60 @@
                 this.currentSuggestions.forEach((label, index) => {
                     const item = document.createElement('div');
                     item.className = 'suggestion-item';
-                    item.textContent = label;
-                    item.addEventListener('click', () => {
-                        this.selectConceptByLabel(label);
-                        document.getElementById('searchInput').value = label;
-                        this.hideSuggestions();
-                    });
+                    item.textContent = label.substring(1);
+                    
+                    const firstChar = label.charAt(0).toLowerCase();
+                    
+                    // Add base class based on type
+                    if (firstChar === "h") {
+                        item.className += " suggestion-hidden";
+                        const conceptId = this.labelsToConceptId[label];
+                        const concept = (!conceptId || !this.concepts[conceptId]) 
+                        ? 'Concept not found:' 
+                        : this.concepts[conceptId]['prefLabel'];
+                        item.innerHTML += ` <b>→ ${concept}</b>`;
+                        // Can still be clicked but with different behavior
+                        item.addEventListener('click', () => {
+                            // Maybe show a warning or different action
+                            console.log("Hidden item clicked:", label);
+                            this.selectConceptByLabel(label);
+                            document.getElementById('searchInput').value = label;
+                            this.hideSuggestions();
+                        });
+                    } else if (firstChar === "p") {
+                        item.className += " suggestion-preferred";
+                        item.addEventListener('click', () => {
+                            this.selectConceptByLabel(label);
+                            document.getElementById('searchInput').value = label;
+                            this.hideSuggestions();
+                        });
+                    } else if (firstChar === "a") {
+                        item.className += " suggestion-alternative";
+                        const conceptId = this.labelsToConceptId[label];
+                        const concept = (!conceptId || !this.concepts[conceptId]) 
+                        ? 'Concept not found:' 
+                        : this.concepts[conceptId]['prefLabel'];
+                        item.innerHTML += ` <b>→ ${concept}</b>`;
+                        item.addEventListener('click', () => {
+                            this.selectConceptByLabel(label);
+                            document.getElementById('searchInput').value = label;
+                            this.hideSuggestions();
+                        });
+                    } else {
+                        item.addEventListener('click', () => {
+                            this.selectConceptByLabel(label);
+                            document.getElementById('searchInput').value = label;
+                            this.hideSuggestions();
+                        });
+                    }
+                    
+                    // Add mouseenter for all items
                     item.addEventListener('mouseenter', () => {
                         this.highlightedIndex = index;
                         this.updateHighlight();
                         this.updateConceptDetail();
                     });
+                    
                     container.appendChild(item);
                 });
                 container.style.display = 'block';
@@ -470,7 +513,7 @@
 
             findMatchingLabels(query) {
                 return Object.keys(this.labelsToConceptId)
-                    .filter(label => label.toLowerCase().includes(query))
+                    .filter(label => label.substring(1).toLowerCase().includes(query))
                     .sort();
             }
 
@@ -499,7 +542,7 @@
 
             getConceptsByLetter(letter) {
                 return Object.keys(this.labelsToConceptId)
-                    .filter(label => label.toLowerCase().startsWith(letter.toLowerCase()))
+                    .filter(label => label.substring(1).toLowerCase().startsWith(letter.toLowerCase()))
                     .sort()
                     .map(label => ({
                         label,

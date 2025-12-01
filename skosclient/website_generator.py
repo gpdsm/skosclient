@@ -49,7 +49,7 @@ def generate_website(base_uri, verobse, output_path, input_path, file_format):
     # Example usage
     html = render_template("index.template.html",
                            title="My App", description="/api")
-    (output_path / "index.html").write_text(html)
+    (output_path / "index.html").write_text(html, encoding="utf-8")
 
     for ui_lang in ["en", "it", "de"]:
         name = f"ui_translations_{ui_lang}.json"
