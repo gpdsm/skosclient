@@ -560,12 +560,27 @@
                     itemsContainer.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">${noResultsText}</div>`;
                     return;
                 }
-                concepts.forEach(({ label, conceptId }) => {
+                concepts.forEach(({ label, conceptId }) => {                     
+                    const firstChar = label.charAt(0).toLowerCase();
+                    
+                    // Add base class based on type
+                    if (firstChar !== "h") {
                     const item = document.createElement('div');
                     item.className = 'concept-item';
-                    item.textContent = label;
+                    item.textContent = label.substring(1);
+                     if (firstChar === "p") {
+                        item.className += " suggestion-preferred";
+  
+                    } else if (firstChar === "a") {
+                        item.className += " suggestion-alternative";
+                        const conceptId = this.labelsToConceptId[label];
+                        const concept = (!conceptId || !this.concepts[conceptId]) 
+                        ? 'Concept not found:' 
+                        : this.concepts[conceptId]['prefLabel'];
+                        item.innerHTML += ` <b>→ ${concept}</b>`;
+                    }
                     item.addEventListener('click', () => this.selectConcept(label, item));
-                    itemsContainer.appendChild(item);
+                    itemsContainer.appendChild(item);}
                 });
             }
 
