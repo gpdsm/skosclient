@@ -652,6 +652,37 @@
                     `;
                 }
 
+                if (concept.example && concept.example.length > 0) {
+                    html += `
+                        <div class="concept-section">
+                            <div class="section-title">${this.translations.examples || 'Examples'}:</div>
+                            <div class="section-content">
+                                ${concept.example.map(ex => `<p>${ex}</p>`).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+
+                const noteFields = [
+                { field: 'note', label: this.translations.notes || 'Notes' },
+                { field: 'scopeNote', label: this.translations.scopeNotes || 'Scope notes' },
+                { field: 'historyNote', label: this.translations.historyNotes || 'History notes' },
+                { field: 'editorialNote', label: this.translations.editorialNotes || 'Editorial notes' }
+                ];
+
+                noteFields.forEach(({ field, label }) => {
+                    if (concept[field] && concept[field].length > 0) {
+                        html += `
+                            <div class="concept-section">
+                                <div class="section-title">${label}:</div>
+                                <div class="section-content">
+                                    ${concept[field].map(note => `<p>${note}</p>`).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+
                 if (concept.broaderConcept && concept.broaderConcept.length > 0) {
                     html += `
                         <div class="concept-section">
@@ -686,37 +717,6 @@
                                 <div class="relations">
                                     ${this.renderConceptRelations(concept.related)}
                                 </div>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                const noteFields = [
-                    { field: 'note', label: this.translations.notes || 'Notes' },
-                    { field: 'scopeNote', label: this.translations.scopeNotes || 'Scope notes' },
-                    { field: 'historyNote', label: this.translations.historyNotes || 'History notes' },
-                    { field: 'editorialNote', label: this.translations.editorialNotes || 'Editorial notes' }
-                ];
-
-                noteFields.forEach(({ field, label }) => {
-                    if (concept[field] && concept[field].length > 0) {
-                        html += `
-                            <div class="concept-section">
-                                <div class="section-title">${label}:</div>
-                                <div class="section-content">
-                                    ${concept[field].map(note => `<p>${note}</p>`).join('')}
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-
-                if (concept.example && concept.example.length > 0) {
-                    html += `
-                        <div class="concept-section">
-                            <div class="section-title">${this.translations.examples || 'Examples'}:</div>
-                            <div class="section-content">
-                                ${concept.example.map(ex => `<p>${ex}</p>`).join('')}
                             </div>
                         </div>
                     `;
