@@ -3,8 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title></title>
+    <title>SKOS Dictionary</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        /* Additional styles for grouped results */
+        .results-group {
+            margin-bottom: 12px;
+        }
+        
+        .results-group-title {
+            background: #f0f0f0;
+            padding: 4px 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid #ddd;
+            margin-bottom: 2px;
+        }
+        
+        .results-group-items {
+            display: grid;
+            gap: 0;
+        }
+        
+        /* Different styles for different label types */
+        .concept-item.label-preferred {
+            /* Default style - preferred labels */
+        }
+        
+        .concept-item.label-alternative {
+            font-style: italic;
+            color: #666;
+        }
+                
+        .concept-item.label-hidden {
+            color: #888;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -27,15 +64,14 @@
             <div class="left-panel">
                 <div class="search-box">
                     <input type="search" id="searchInput" placeholder="Search for a concept..." autocomplete="off">
-                    <div id="searchSuggestions"></div>
                 </div>
 
                 <div class="alphabet-nav" id="alphabetNav"></div>
 
                 <div class="concept-list">
                     <div class="list-header" id="listTitle">Select a letter or search</div>
-                    <div class="list-content">
-                        <div class="concept-items-grid" id="conceptItems"></div>
+                    <div class="list-content" id="conceptItems">
+                        <!-- Results will be grouped here -->
                     </div>
                 </div>
             </div>
@@ -44,7 +80,7 @@
                 <div class="empty-state" id="emptyState">
                     Select a concept to view its details
                 </div>
-                <div id="conceptDetail" style="display: none;"></div>
+                <div id="conceptDetail"></div>
             </div>
         </div>
     </div>
@@ -57,11 +93,14 @@
                 this.concepts = {};
                 this.labelsToConceptId = {};
                 this.metadata = {};
-                this.translations = {};
+                this.translations = {
+                    conceptsGroup: "Concepts",
+                    alternativeFormsGroup: "Alternative forms",
+                    variantsGroup: "Variants"
+                };
                 this.currentFilter = null;
                 this.selectedConcept = null;
-                this.currentSuggestions = [];
-                this.highlightedIndex = -1;
+                this.searchTimeout = null;
 
                 this.currentUILanguage = this.detectBrowserLocale();
                 this.init();
@@ -72,21 +111,17 @@
                     const browserLang = navigator.language || navigator.userLanguage;
                     if (!browserLang) return 'en';
                     const langCode = browserLang.split('-')[0].toLowerCase();
-                    console.log(`Detected browser locale: ${langCode}`);
                     return langCode;
                 } catch (error) {
-                    console.warn('Error detecting browser locale:', error);
                     return 'en';
                 }
             }
 
-            getLanguageDisplayName(languageCode, displayLanguage = null) {
+            getLanguageDisplayName(languageCode) {
                 try {
-                    const displayLang = displayLanguage || this.currentUILanguage || 'en';
-                    const displayNames = new Intl.DisplayNames([displayLang], { type: 'language' });
+                    const displayNames = new Intl.DisplayNames([this.currentUILanguage || 'en'], { type: 'language' });
                     return displayNames.of(languageCode);
                 } catch (error) {
-                    console.warn(`Could not get display name for ${languageCode}:`, error);
                     return languageCode.toUpperCase();
                 }
             }
@@ -105,19 +140,10 @@
             parseURLParameters() {
                 const urlParams = new URLSearchParams(window.location.search);
                 const uiLang = urlParams.get('ui') || urlParams.get('uilang');
-                if (uiLang) {
-                    this.currentUILanguage = uiLang;
-                }
+                if (uiLang) this.currentUILanguage = uiLang;
                 const contentLang = urlParams.get('lang');
-                if (contentLang) {
-                    this.currentLanguage = contentLang;
-                }
+                if (contentLang) this.currentLanguage = contentLang;
                 this.urlConceptId = urlParams.get('concept') || urlParams.get('id');
-                console.log('Parsed URL params:', {
-                    uiLang: this.currentUILanguage,
-                    contentLang: this.currentLanguage,
-                    conceptId: this.urlConceptId
-                });
             }
 
             async handleURLConcept() {
@@ -128,196 +154,147 @@
                     window.history.replaceState({}, '', url);
                     this.selectedConcept = this.urlConceptId;
                     this.displayConceptDetail(this.concepts[this.urlConceptId]);
-                    document.getElementById('searchInput').value = this.concepts[this.urlConceptId].prefLabel;
                 }
             }
 
             async loadTranslations() {
                 try {
-                    if (!this.currentUILanguage) {
-                        this.currentUILanguage = 'en';
-                    }
-                    console.log(`Attempting to load translations for: ${this.currentUILanguage}`);
                     const response = await fetch(`ui_translations_${this.currentUILanguage}.json`);
-                    if (!response.ok) {
-                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    if (response.ok) {
+                        const translations = await response.json();
+                        Object.assign(this.translations, translations);
                     }
-                    this.translations = await response.json();
-                    console.log(`Loaded ${this.currentUILanguage} translations successfully`);
                 } catch (error) {
-                    console.error(`Error loading ${this.currentUILanguage} translations:`, error);
-                    console.log('Falling back to English translations');
-                    this.translations = {
-                        "pageTitle": "No title found",
-                        "pageSubtitle": "No description found",
-                        "uiLanguageLabel": "UI:",
-                        "contentLanguageLabel": "Content:",
-                        "searchPlaceholder": "Search for a concept...",
-                        "listTitle": "Select a letter or search",
-                        "emptyState": "Select a concept to view its details",
-                        "loading": "Loading...",
-                        "loadingError": "Error loading data",
-                        "noConceptsFound": "No concepts found",
-                        "conceptsStartingWith": "Concepts starting with",
-                        "definition": "Definition",
-                        "altLabels": "Alternative labels",
-                        "broaderConcepts": "Broader concepts",
-                        "narrowerConcepts": "Narrower concepts",
-                        "relatedConcepts": "Related concepts",
-                        "notes": "Notes",
-                        "scopeNotes": "Scope notes",
-                        "historyNotes": "History notes",
-                        "editorialNotes": "Editorial notes",
-                        "examples": "Examples",
-                        "permalink": "Permalink"
-                    };
+                    console.log('Using default translations');
                 }
+                
+                // Set default translations
+                this.translations = Object.assign({
+                    pageTitle: "Dictionary",
+                    pageSubtitle: "Sectoral Dictionary",
+                    uiLanguageLabel: "UI:",
+                    contentLanguageLabel: "Content:",
+                    searchPlaceholder: "Search...",
+                    listTitle: "Select a letter or search",
+                    emptyState: "Select a concept",
+                    loading: "Loading...",
+                    conceptsStartingWith: "Concepts starting with",
+                    conceptsGroup: "Concepts",
+                    alternativeFormsGroup: "Alternative forms",
+                    variantsGroup: "Variants",
+                    definition: "Definition",
+                    altLabels: "Alternative labels",
+                    broaderConcepts: "Broader concepts",
+                    narrowerConcepts: "Narrower concepts",
+                    relatedConcepts: "Related concepts",
+                    examples: "Examples",
+                    permalink: "Permalink"
+                }, this.translations);
             }
 
             updateUI() {
                 const titleEl = document.getElementById('pageTitle');
                 const subtitleEl = document.getElementById('pageSubtitle');
-            
-                // --- TITLE ---
+                
                 let title = null;
-                if (this.metadata && this.metadata.title && typeof this.metadata.title === 'object') {
-                    title =
-                        this.metadata.title[this.currentLanguage] ||
-                        this.metadata.title[this.currentUILanguage] ||
-                        this.metadata.title["no-lang"] ||
-                        null;
+                if (this.metadata?.title && typeof this.metadata.title === 'object') {
+                    title = this.metadata.title[this.currentLanguage] || 
+                            this.metadata.title[this.currentUILanguage] || 
+                            this.metadata.title["no-lang"];
                 }
-                titleEl.textContent = title || this.translations.pageTitle || "No title found";
-            
-                // --- SUBTITLE / DESCRIPTION ---
+                titleEl.textContent = title || this.translations.pageTitle;
+                
                 let description = null;
-                if (this.metadata && this.metadata.description && typeof this.metadata.description === 'object') {
-                    description =
-                        this.metadata.description[this.currentLanguage] ||
-                        this.metadata.description[this.currentUILanguage] ||
-                        this.metadata.description["no-lang"] ||
-                        null;
+                if (this.metadata?.description && typeof this.metadata.description === 'object') {
+                    description = this.metadata.description[this.currentLanguage] || 
+                                 this.metadata.description[this.currentUILanguage] || 
+                                 this.metadata.description["no-lang"];
                 }
-                subtitleEl.textContent = description || this.translations.pageSubtitle || "";
-            
-                // --- OTHER LABELS ---
-                document.getElementById('uiLanguageLabel').textContent =
-                    this.translations.uiLanguageLabel || 'UI:';
-            
-                document.getElementById('contentLanguageLabel').textContent =
-                    this.translations.contentLanguageLabel || 'Content:';
-            
-                document.getElementById('searchInput').placeholder =
-                    this.translations.searchPlaceholder || 'Search...';
-            
-                document.getElementById('listTitle').textContent =
-                    this.translations.listTitle || 'Select a letter or search';
-            
-                document.getElementById('emptyState').textContent =
-                    this.translations.emptyState || 'Select a concept';
-            
-                // Set <html lang="">
-                document.documentElement.lang = this.currentUILanguage || 'en';
+                subtitleEl.textContent = description || this.translations.pageSubtitle;
+                
+                document.getElementById('uiLanguageLabel').textContent = this.translations.uiLanguageLabel;
+                document.getElementById('contentLanguageLabel').textContent = this.translations.contentLanguageLabel;
+                document.getElementById('searchInput').placeholder = this.translations.searchPlaceholder;
+                document.getElementById('listTitle').textContent = this.translations.listTitle;
+                document.getElementById('emptyState').textContent = this.translations.emptyState;
+                document.documentElement.lang = this.currentUILanguage;
             }
-            
 
             async loadMetadata() {
                 try {
                     const response = await fetch('thesaurus_metadata.json');
                     this.metadata = await response.json();
-                    console.log('Loaded metadata:', this.metadata);
+                    
                     if (!this.currentLanguage) {
-                        const availableLanguages = this.metadata.available_languages || this.metadata.languages || ['en'];
-                        if (availableLanguages.length > 0 && typeof availableLanguages[0] === 'object') {
-                            this.currentLanguage = availableLanguages[0].code;
-                        } else {
-                            this.currentLanguage = availableLanguages[0];
+                        let availableLanguages = this.metadata.available_languages || ['en'];
+                        if (typeof availableLanguages[0] === 'object') {
+                            availableLanguages = availableLanguages.map(l => l.code);
                         }
-                        console.log(`Default content language set to: ${this.currentLanguage}`);
+                        this.currentLanguage = availableLanguages[0];
                     }
                     this.populateLanguageSelectors();
                 } catch (error) {
-                    console.error('Error loading metadata:', error);
-                    this.metadata = { 
-                        title: "Untitled (no metadata found)",
-                        description: "No description available.",
-                        available_languages: ['en', 'it'],
-                        ui_languages: ['en', 'it']
+                    this.metadata = {
+                        available_languages: ['en'],
+                        ui_languages: ['en']
                     };
-                    if (!this.currentLanguage) {
-                        this.currentLanguage = 'en';
-                    }
-                    console.log('Using fallback metadata');
+                    if (!this.currentLanguage) this.currentLanguage = 'en';
                     this.populateLanguageSelectors();
                 }
             }
 
             populateLanguageSelectors() {
-                console.log('Populating language selectors');
                 const contentSelector = document.getElementById('languageSelect');
                 const uiSelector = document.getElementById('uiLanguageSelect');
-                if (!contentSelector || !uiSelector) {
-                    console.error('Language selector elements not found');
-                    return;
-                }
+                if (!contentSelector || !uiSelector) return;
+                
                 contentSelector.innerHTML = '';
-                let availableLanguages = this.metadata.available_languages || this.metadata.languages || ['en'];
-                if (availableLanguages.length > 0 && typeof availableLanguages[0] === 'object') {
-                    availableLanguages = availableLanguages.map(lang => lang.code);
+                let availableLanguages = this.metadata.available_languages || ['en'];
+                if (typeof availableLanguages[0] === 'object') {
+                    availableLanguages = availableLanguages.map(l => l.code);
                 }
                 availableLanguages.forEach(langCode => {
                     const option = document.createElement('option');
                     option.value = langCode;
                     option.textContent = this.getLanguageDisplayName(langCode);
-                    if (langCode === this.currentLanguage) {
-                        option.selected = true;
-                    }
+                    if (langCode === this.currentLanguage) option.selected = true;
                     contentSelector.appendChild(option);
                 });
+                
                 uiSelector.innerHTML = '';
-                let uiLanguages = this.metadata.ui_languages || this.metadata.available_languages || this.metadata.languages || ['en', 'it'];
-                if (uiLanguages.length > 0 && typeof uiLanguages[0] === 'object') {
-                    uiLanguages = uiLanguages.map(lang => lang.code);
+                let uiLanguages = this.metadata.ui_languages || this.metadata.available_languages || ['en'];
+                if (typeof uiLanguages[0] === 'object') {
+                    uiLanguages = uiLanguages.map(l => l.code);
                 }
                 uiLanguages.forEach(langCode => {
                     const option = document.createElement('option');
                     option.value = langCode;
                     option.textContent = this.getLanguageDisplayName(langCode);
-                    if (langCode === this.currentUILanguage) {
-                        option.selected = true;
-                    }
+                    if (langCode === this.currentUILanguage) option.selected = true;
                     uiSelector.appendChild(option);
                 });
             }
 
             async loadLanguageData(languageCode) {
                 try {
-                    if (!languageCode) {
-                        languageCode = 'en';
-                        this.currentLanguage = 'en';
-                    }
-                    console.log(`Loading data for language: ${languageCode}`);
-                    const loadingText = this.translations.loading || 'Loading...';
-                    document.getElementById('conceptItems').innerHTML = `<div class="loading" style="grid-column: 1/-1">${loadingText}</div>`;
+                    if (!languageCode) languageCode = 'en';
+                    
+                    document.getElementById('conceptItems').innerHTML = 
+                        `<div class="loading">${this.translations.loading}</div>`;
+                    
                     const [conceptsResponse, labelsResponse] = await Promise.all([
                         fetch(`concepts_${languageCode}.json`),
                         fetch(`labels_to_concept_${languageCode}.json`)
                     ]);
-                    if (!conceptsResponse.ok) {
-                        throw new Error(`Failed to load concepts_${languageCode}.json: ${conceptsResponse.status}`);
-                    }
-                    if (!labelsResponse.ok) {
-                        throw new Error(`Failed to load labels_to_concept_${languageCode}.json: ${labelsResponse.status}`);
-                    }
+                    
                     this.concepts = await conceptsResponse.json();
                     this.labelsToConceptId = await labelsResponse.json();
-                    console.log(`Loaded ${Object.keys(this.concepts).length} concepts`);
-                    this.clearConceptList();
-                    this.clearConceptDetail();
+                    
+                    this.clearResults();
                 } catch (error) {
-                    console.error('Error loading language data:', error);
-                    const errorText = this.translations.loadingError || 'Error loading data';
-                    document.getElementById('conceptItems').innerHTML = `<div class="empty-state" style="grid-column: 1/-1">${errorText}<br><small>${error.message}</small></div>`;
+                    console.error('Error loading data:', error);
+                    document.getElementById('conceptItems').innerHTML = 
+                        `<div class="empty-state">Error loading data</div>`;
                 }
             }
 
@@ -328,32 +305,23 @@
                     this.updateUI();
                     this.populateLanguageSelectors();
                 });
+                
                 document.getElementById('languageSelect').addEventListener('change', async (e) => {
                     this.currentLanguage = e.target.value;
                     await this.loadLanguageData(this.currentLanguage);
                 });
+                
                 const searchInput = document.getElementById('searchInput');
                 searchInput.addEventListener('input', (e) => {
-                    this.handleSearch(e.target.value);
-                });
-                searchInput.addEventListener('keydown', (e) => {
-                    this.handleSearchKeydown(e);
-                });
-                searchInput.addEventListener('focus', () => {
-                    if (searchInput.value && this.currentSuggestions.length > 0) {
-                        document.getElementById('searchSuggestions').style.display = 'block';
-                    }
-                });
-                document.addEventListener('click', (e) => {
-                    if (!e.target.closest('.search-box')) {
-                        this.hideSuggestions();
-                    }
+                    clearTimeout(this.searchTimeout);
+                    this.searchTimeout = setTimeout(() => {
+                        this.handleSearch(e.target.value);
+                    }, 300); // Debounce 300ms
                 });
             }
 
             generatePermalink(conceptId) {
-                const baseUrl = window.location.origin + window.location.pathname;
-                const url = new URL(baseUrl);
+                const url = new URL(window.location);
                 url.searchParams.set('concept', conceptId);
                 url.searchParams.set('lang', this.currentLanguage);
                 if (this.currentUILanguage !== 'en') {
@@ -364,157 +332,16 @@
 
             handleSearch(query) {
                 if (!query.trim()) {
-                    this.hideSuggestions();
-                    this.clearConceptDetail();
+                    this.clearResults();
                     return;
                 }
-                this.showSuggestions(query);
-            }
-
-            handleSearchKeydown(e) {
-                const container = document.getElementById('searchSuggestions');
-                if (container.style.display === 'none' || this.currentSuggestions.length === 0) {
-                    return;
-                }
-                switch(e.key) {
-                    case 'ArrowDown':
-                        e.preventDefault();
-                        this.highlightedIndex++;
-                        if (this.highlightedIndex >= this.currentSuggestions.length) {
-                            this.highlightedIndex = 0;
-                        }
-                        this.updateHighlight();
-                        this.updateConceptDetail();
-                        break;
-                    case 'ArrowUp':
-                        e.preventDefault();
-                        this.highlightedIndex--;
-                        if (this.highlightedIndex < 0) {
-                            this.highlightedIndex = this.currentSuggestions.length - 1;
-                        }
-                        this.updateHighlight();
-                        this.updateConceptDetail();
-                        break;
-                    case 'Enter':
-                        e.preventDefault();
-                        if (this.highlightedIndex >= 0) {
-                            const selectedLabel = this.currentSuggestions[this.highlightedIndex];
-                            document.getElementById('searchInput').value = selectedLabel.substring(1);
-                            this.hideSuggestions();
-                        }
-                        break;
-                    case 'Escape':
-                        e.preventDefault();
-                        this.hideSuggestions();
-                        break;
-                    default:
-                        return;
-                }
-            }
-
-            showSuggestions(query) {
-                const suggestions = this.findMatchingLabels(query.toLowerCase());
-                const container = document.getElementById('searchSuggestions');
-                if (suggestions.length === 0) {
-                    this.hideSuggestions();
-                    return;
-                }
-                this.currentSuggestions = suggestions.slice(0, 10);
-                this.highlightedIndex = 0;
-                container.innerHTML = '';
-                this.currentSuggestions.forEach((label, index) => {
-                    const item = document.createElement('div');
-                    item.className = 'suggestion-item';
-                    item.textContent = label.substring(1);
-                    
-                    const firstChar = label.charAt(0).toLowerCase();
-                    
-                    // Add base class based on type
-                    if (firstChar === "h") {
-                        item.className += " suggestion-hidden";
-                        const conceptId = this.labelsToConceptId[label];
-                        const concept = (!conceptId || !this.concepts[conceptId]) 
-                        ? 'Concept not found:' 
-                        : this.concepts[conceptId]['prefLabel'];
-                        item.innerHTML += ` <b>→ ${concept}</b>`;
-                        // Can still be clicked but with different behavior
-                        item.addEventListener('click', () => {
-                            // Maybe show a warning or different action
-                            console.log("Hidden item clicked:", label);
-                            this.selectConceptByLabel(label);
-                            document.getElementById('searchInput').value = label;
-                            this.hideSuggestions();
-                        });
-                    } else if (firstChar === "p") {
-                        item.className += " suggestion-preferred";
-                        item.addEventListener('click', () => {
-                            this.selectConceptByLabel(label);
-                            document.getElementById('searchInput').value = label;
-                            this.hideSuggestions();
-                        });
-                    } else if (firstChar === "a") {
-                        item.className += " suggestion-alternative";
-                        const conceptId = this.labelsToConceptId[label];
-                        const concept = (!conceptId || !this.concepts[conceptId]) 
-                        ? 'Concept not found:' 
-                        : this.concepts[conceptId]['prefLabel'];
-                        item.innerHTML += ` <b>→ ${concept}</b>`;
-                        item.addEventListener('click', () => {
-                            this.selectConceptByLabel(label);
-                            document.getElementById('searchInput').value = label;
-                            this.hideSuggestions();
-                        });
-                    } else {
-                        item.addEventListener('click', () => {
-                            this.selectConceptByLabel(label);
-                            document.getElementById('searchInput').value = label;
-                            this.hideSuggestions();
-                        });
-                    }
-                    
-                    // Add mouseenter for all items
-                    item.addEventListener('mouseenter', () => {
-                        this.highlightedIndex = index;
-                        this.updateHighlight();
-                        this.updateConceptDetail();
-                    });
-                    
-                    container.appendChild(item);
-                });
-                container.style.display = 'block';
-                this.updateHighlight();
-                this.updateConceptDetail();
-            }
-
-            updateHighlight() {
-                const items = document.querySelectorAll('.suggestion-item');
-                items.forEach((item, index) => {
-                    if (index === this.highlightedIndex) {
-                        item.classList.add('highlighted');
-                        item.scrollIntoView({ block: 'nearest' });
-                    } else {
-                        item.classList.remove('highlighted');
-                    }
-                });
-            }
-
-            updateConceptDetail() {
-                if (this.highlightedIndex >= 0 && this.highlightedIndex < this.currentSuggestions.length) {
-                    const selectedLabel = this.currentSuggestions[this.highlightedIndex];
-                    this.selectConceptByLabel(selectedLabel, false);
-                }
-            }
-
-            hideSuggestions() {
-                document.getElementById('searchSuggestions').style.display = 'none';
-                this.currentSuggestions = [];
-                this.highlightedIndex = -1;
-            }
-
-            findMatchingLabels(query) {
-                return Object.keys(this.labelsToConceptId)
-                    .filter(label => label.substring(1).toLowerCase().includes(query))
+                
+                const matchingLabels = Object.keys(this.labelsToConceptId)
+                    .filter(label => label.substring(1).toLowerCase().includes(query.toLowerCase()))
                     .sort();
+                
+                const title = `${matchingLabels.length} results for "${query}"`;
+                this.displayGroupedResults(matchingLabels, title);
             }
 
             generateAlphabet() {
@@ -534,73 +361,103 @@
                     btn.classList.remove('active');
                 });
                 event.target.classList.add('active');
-                this.currentFilter = letter.toLowerCase();
-                const matchingConcepts = this.getConceptsByLetter(letter);
-                const title = `${this.translations.conceptsStartingWith || 'Concepts starting with'} "${letter}"`;
-                this.displayConceptList(matchingConcepts, title);
-            }
-
-            getConceptsByLetter(letter) {
-                return Object.keys(this.labelsToConceptId)
+                
+                const matchingLabels = Object.keys(this.labelsToConceptId)
                     .filter(label => label.substring(1).toLowerCase().startsWith(letter.toLowerCase()))
-                    .sort()
-                    .map(label => ({
-                        label,
-                        conceptId: this.labelsToConceptId[label]
-                    }));
+                    .sort();
+                
+                const title = `${this.translations.conceptsStartingWith} "${letter}"`;
+                this.displayGroupedResults(matchingLabels, title);
             }
 
-            displayConceptList(concepts, title) {
+            displayGroupedResults(labels, title) {
                 const titleElement = document.getElementById('listTitle');
-                const itemsContainer = document.getElementById('conceptItems');
+                const container = document.getElementById('conceptItems');
+                
                 titleElement.textContent = title;
-                itemsContainer.innerHTML = '';
-                if (concepts.length === 0) {
-                    const noResultsText = this.translations.noConceptsFound || 'No concepts found';
-                    itemsContainer.innerHTML = `<div class="empty-state" style="grid-column: 1/-1">${noResultsText}</div>`;
+                container.innerHTML = '';
+                
+                if (labels.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No results found</div>';
                     return;
                 }
-                concepts.forEach(({ label, conceptId }) => {                     
+                
+                // Group labels by type
+                const groups = {
+                    p: { title: this.translations.conceptsGroup, labels: [] },
+                    a: { title: this.translations.alternativeFormsGroup, labels: [] },
+                    h: { title: this.translations.variantsGroup, labels: [] }
+                };
+                
+                labels.forEach(label => {
                     const firstChar = label.charAt(0).toLowerCase();
-                    
-                    // Add base class based on type
-                    if (firstChar !== "h") {
+                    if (groups[firstChar]) {
+                        groups[firstChar].labels.push(label);
+                    }
+                });
+                
+                // Render groups in order: p, a, h
+                ['p', 'a', 'h'].forEach(type => {
+                    const group = groups[type];
+                    if (group.labels.length > 0) {
+                        this.renderGroup(group.title, group.labels, type, container);
+                    }
+                });
+            }
+
+            renderGroup(title, labels, type, container) {
+                const groupDiv = document.createElement('div');
+                groupDiv.className = 'results-group';
+                
+                const groupTitle = document.createElement('div');
+                groupTitle.className = 'results-group-title';
+                groupTitle.textContent = `${title} (${labels.length})`;
+                groupDiv.appendChild(groupTitle);
+                
+                const itemsGrid = document.createElement('div');
+                itemsGrid.className = 'results-group-items';
+                
+                labels.forEach(label => {
                     const item = document.createElement('div');
                     item.className = 'concept-item';
-                    item.textContent = label.substring(1);
-                     if (firstChar === "p") {
-                        item.className += " suggestion-preferred";
-  
-                    } else if (firstChar === "a") {
-                        item.className += " suggestion-alternative";
-                        const conceptId = this.labelsToConceptId[label];
-                        const concept = (!conceptId || !this.concepts[conceptId]) 
-                        ? 'Concept not found:' 
-                        : this.concepts[conceptId]['prefLabel'];
-                        item.innerHTML += ` <b>→ ${concept}</b>`;
+                    
+                    var displayText = label.substring(1);
+                    const conceptId = this.labelsToConceptId[label];
+                    
+                    if (type === 'p') {
+                        item.classList.add('label-preferred');
+                        item.textContent = displayText;
+                    } else if (type === 'a') {
+                        item.classList.add('label-alternative');
+                        const concept = this.concepts[conceptId];
+                        
+                        if (concept) {
+                            item.innerHTML += `${displayText}<b>→ ${concept.prefLabel}</b>`;
+                        }
+                    } else if (type === 'h') {
+                        item.classList.add('label-hidden');
+                        const concept = this.concepts[conceptId];
+                        item.textContent = displayText;
+                        if (concept) {
+                            item.title = `Hidden variant of: ${concept.prefLabel}`;
+                        }
                     }
-                    item.addEventListener('click', () => this.selectConcept(label, item));
-                    itemsContainer.appendChild(item);}
+                    
+                    item.addEventListener('click', () => {
+                        this.selectConceptByLabel(label);
+                        // Highlight selected
+                        document.querySelectorAll('.concept-item').forEach(i => i.classList.remove('selected'));
+                        item.classList.add('selected');
+                    });
+                    
+                    itemsGrid.appendChild(item);
                 });
+                
+                groupDiv.appendChild(itemsGrid);
+                container.appendChild(groupDiv);
             }
 
-            selectConcept(label, itemElement = null) {
-                const conceptId = this.labelsToConceptId[label];
-                if (!conceptId || !this.concepts[conceptId]) {
-                    console.error('Concept not found:', label);
-                    return;
-                }
-                document.querySelectorAll('.concept-item').forEach(item => {
-                    item.classList.remove('selected');
-                });
-                if (itemElement) {
-                    itemElement.classList.add('selected');
-                }
-                this.selectedConcept = conceptId;
-                this.displayConceptDetail(this.concepts[conceptId]);
-            }
-
-            selectConceptByLabel(label, hideSuggestions = true) {
+            selectConceptByLabel(label) {
                 const conceptId = this.labelsToConceptId[label];
                 if (!conceptId || !this.concepts[conceptId]) {
                     console.error('Concept not found:', label);
@@ -608,85 +465,64 @@
                 }
                 this.selectedConcept = conceptId;
                 this.displayConceptDetail(this.concepts[conceptId]);
-                if (hideSuggestions) {
-                    this.hideSuggestions();
-                }
             }
 
             displayConceptDetail(concept) {
                 const emptyState = document.getElementById('emptyState');
                 const detailContainer = document.getElementById('conceptDetail');
+                
                 emptyState.style.display = 'none';
                 detailContainer.style.display = 'block';
+                
                 let html = `<div class="concept-title">${concept.prefLabel}</div>`;
                 
                 if (this.selectedConcept) {
                     const permalink = this.generatePermalink(this.selectedConcept);
                     html += `
                         <div class="permalink">
-                            <strong>${this.translations.permalink || 'Permalink'}:</strong><br>
+                            <strong>${this.translations.permalink}:</strong><br>
                             <code>${permalink}</code>
                         </div>
                     `;
                 }
-
-                if (concept.definition && concept.definition.length > 0) {
+                
+                if (concept.definition?.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.definition || 'Definition'}:</div>
+                            <div class="section-title">${this.translations.definition}:</div>
                             <div class="section-content">
                                 ${concept.definition.map(def => `<p>${def}</p>`).join('')}
                             </div>
                         </div>
                     `;
                 }
-
-                if (concept.altLabel && concept.altLabel.length > 0) {
+                
+                if (concept.altLabel?.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.altLabels || 'Alternative labels'}:</div>
+                            <div class="section-title">${this.translations.altLabels}:</div>
                             <div class="section-content">
                                 ${concept.altLabel.join(', ')}
                             </div>
                         </div>
                     `;
                 }
-
-                if (concept.example && concept.example.length > 0) {
+                
+                if (concept.example?.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.examples || 'Examples'}:</div>
+                            <div class="section-title">${this.translations.examples}:</div>
                             <div class="section-content">
                                 ${concept.example.map(ex => `<p>${ex}</p>`).join('')}
                             </div>
                         </div>
                     `;
                 }
-
-                const noteFields = [
-                { field: 'note', label: this.translations.notes || 'Notes' },
-                { field: 'scopeNote', label: this.translations.scopeNotes || 'Scope notes' },
-                { field: 'historyNote', label: this.translations.historyNotes || 'History notes' },
-                { field: 'editorialNote', label: this.translations.editorialNotes || 'Editorial notes' }
-                ];
-
-                noteFields.forEach(({ field, label }) => {
-                    if (concept[field] && concept[field].length > 0) {
-                        html += `
-                            <div class="concept-section">
-                                <div class="section-title">${label}:</div>
-                                <div class="section-content">
-                                    ${concept[field].map(note => `<p>${note}</p>`).join('')}
-                                </div>
-                            </div>
-                        `;
-                    }
-                });
-
-                if (concept.broaderConcept && concept.broaderConcept.length > 0) {
+                
+                if (concept.broaderConcept?.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.broaderConcepts || 'Broader concepts'}:</div>
+                            <div class="section-title">${this.translations.broaderConcepts}:</div>
                             <div class="section-content">
                                 <div class="relations">
                                     ${this.renderConceptRelations(concept.broaderConcept)}
@@ -695,11 +531,11 @@
                         </div>
                     `;
                 }
-
-                if (concept.narrowerConcept && concept.narrowerConcept.length > 0) {
+                
+                if (concept.narrowerConcept?.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.narrowerConcepts || 'Narrower concepts'}:</div>
+                            <div class="section-title">${this.translations.narrowerConcepts}:</div>
                             <div class="section-content">
                                 <div class="relations">
                                     ${this.renderConceptRelations(concept.narrowerConcept)}
@@ -708,11 +544,11 @@
                         </div>
                     `;
                 }
-
-                if (concept.related && concept.related.length > 0) {
+                
+                if (concept.related?.length > 0) {
                     html += `
                         <div class="concept-section">
-                            <div class="section-title">${this.translations.relatedConcepts || 'Related concepts'}:</div>
+                            <div class="section-title">${this.translations.relatedConcepts}:</div>
                             <div class="section-content">
                                 <div class="relations">
                                     ${this.renderConceptRelations(concept.related)}
@@ -721,17 +557,15 @@
                         </div>
                     `;
                 }
-
+                
                 detailContainer.innerHTML = html;
-
+                
                 document.querySelectorAll('.relation-item').forEach(item => {
                     item.addEventListener('click', () => {
                         const conceptId = item.dataset.conceptId;
-                        const conceptData = this.concepts[conceptId];
-                        if (conceptData) {
+                        if (this.concepts[conceptId]) {
                             this.selectedConcept = conceptId;
-                            this.displayConceptDetail(conceptData);
-                            document.getElementById('searchInput').value = conceptData.prefLabel;
+                            this.displayConceptDetail(this.concepts[conceptId]);
                         }
                     });
                 });
@@ -748,30 +582,22 @@
                         const conceptData = this.concepts[conceptId];
                         label = conceptData ? conceptData.prefLabel : conceptId;
                     }
-                    return `<div class="relation-item" data-concept-id="${conceptId}">${label}</div>`;
+                    return `<span class="relation-item" data-concept-id="${conceptId}">${label}</span>`;
                 }).join('');
             }
 
-            clearConceptList() {
-                const defaultTitle = this.translations.listTitle || 'Select a letter or search';
-                document.getElementById('listTitle').textContent = defaultTitle;
+            clearResults() {
+                document.getElementById('listTitle').textContent = this.translations.listTitle;
                 document.getElementById('conceptItems').innerHTML = '';
-            }
-
-            clearConceptDetail() {
-                const emptyText = this.translations.emptyState || 'Select a concept';
-                document.getElementById('emptyState').textContent = emptyText;
-                document.getElementById('emptyState').style.display = 'block';
-                document.getElementById('conceptDetail').style.display = 'none';
-                this.selectedConcept = null;
+                document.querySelectorAll('.alphabet-nav button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
             }
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('DOM fully loaded, initializing SKOSClient');
             new SKOSClient();
         });
     </script>
 </body>
 </html>
-                
