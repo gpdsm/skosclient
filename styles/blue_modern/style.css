@@ -280,18 +280,32 @@ h1 {
 }
 
 .relation-item {
-    background: #f8f9fa;
-    padding: 6px 10px;
-    border-left: 3px solid #2c5f7c;
+    display: inline;
+    background: none;
+    padding: 0;
+    border: none;
+    color: #2c5f7c;
     cursor: pointer;
-    transition: all 0.2s;
-    font-size: 0.85rem;
-    border-radius: 3px;
+    font-size: inherit;
+    text-decoration: underline;
+    text-decoration-color: #7aafc0;
+    text-underline-offset: 2px;
+    transition: color 0.15s;
 }
 
 .relation-item:hover {
-    background-color: #e0e7ea;
-    transform: translateX(2px);
+    color: #1a4a5a;
+    transform: none; /* rimuovi il translateX che non funziona su inline */
+}
+
+.relation-item::after {
+    content: ", ";
+    color: #333;
+    text-decoration: none;
+}
+
+.relation-item:last-child::after {
+    content: "";
 }
 
 .empty-state {

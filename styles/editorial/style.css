@@ -1,0 +1,609 @@
+/* ─────────────────────────────────────────────
+   Dizionario di metrica e stilistica italiana
+   Stile editoriale contemporaneo
+   Sobrio · colorato · funzionale
+   ───────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap');
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Struttura cromatica: un neutro caldo dominante,
+       un verde salvia come colore di sistema,
+       un terracotta come accento editoriale */
+    --canvas:      #f7f5f0;
+    --surface:     #ffffff;
+    --surface-2:   #f0ede6;
+    --border:      #e2ddd4;
+    --border-mid:  #c8c2b6;
+
+    --ink:         #1e1c18;
+    --ink-2:       #4a4740;
+    --ink-3:       #8a8680;
+
+    --verde:       #3d6b52;   /* verde foresta — colore di sistema */
+    --verde-ch:    #eaf2ec;
+    --verde-mid:   #6a9e7f;
+
+    --terra:       #b04a2a;   /* terracotta — accento editoriale */
+    --terra-ch:    #faf0ea;
+    --terra-mid:   #d4724f;
+
+    --sabbia:      #c8a96e;   /* oro sabbia — dettaglio */
+
+    --f-titoli: 'Libre Baskerville', Georgia, serif;
+    --f-ui:     'DM Sans', system-ui, sans-serif;
+    --f-corpo:  'Libre Baskerville', Georgia, serif;
+    --f-mono:   'Courier New', monospace;
+}
+
+/* ── Base ── */
+
+body {
+    font-family: var(--f-corpo);
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--ink);
+    background-color: var(--canvas);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* ── Layout ── */
+
+.container {
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 0 16px 20px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 295px 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    /* Pannello sinistro appiccicoso */
+    position: sticky;
+    top: 16px;
+}
+
+/* ── Header ── */
+
+header {
+    background: var(--surface);
+    border-bottom: 3px solid var(--verde);
+    padding: 0;
+    margin-bottom: 20px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: stretch;
+    gap: 0;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 10px 20px;
+    border-right: 1px solid var(--border);
+    flex: 1;
+}
+
+h1 {
+    font-family: var(--f-ui);
+    font-size: 0.9rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink);
+    margin: 0;
+}
+
+.subtitle {
+    font-family: var(--f-corpo);
+    font-size: 0.8rem;
+    font-style: italic;
+    color: var(--ink-3);
+}
+
+/* ── Language selector ── */
+
+.language-selector {
+    display: flex;
+    gap: 0;
+    align-items: stretch;
+    font-family: var(--f-ui);
+    font-size: 0.75rem;
+}
+
+.language-selector label {
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: var(--ink-3);
+    font-weight: 400;
+    border-left: 1px solid var(--border);
+    letter-spacing: 0.04em;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+}
+
+.language-selector select {
+    padding: 0 12px;
+    border: none;
+    border-left: 1px solid var(--border);
+    border-radius: 0;
+    font-size: 0.78rem;
+    font-family: var(--f-ui);
+    background: transparent;
+    color: var(--ink-2);
+    cursor: pointer;
+    appearance: none;
+    transition: background 0.15s;
+}
+
+.language-selector select:hover {
+    background: var(--surface-2);
+}
+
+.language-selector select:focus {
+    outline: 2px solid var(--verde);
+    outline-offset: -2px;
+}
+
+/* ── Search ── */
+
+.search-box {
+    position: relative;
+    background: var(--surface);
+    padding: 10px;
+    border: 1px solid var(--border);
+}
+
+#searchInput {
+    width: 100%;
+    padding: 7px 10px;
+    font-size: 0.9rem;
+    font-family: var(--f-corpo);
+    font-style: italic;
+    border: 1px solid var(--border);
+    border-radius: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    transition: border-color 0.15s, background 0.15s;
+}
+
+#searchInput::placeholder {
+    color: var(--ink-3);
+    font-style: italic;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--verde);
+    background: var(--surface);
+}
+
+#searchSuggestions {
+    position: absolute;
+    top: 100%;
+    left: 10px;
+    right: 10px;
+    background: var(--surface);
+    border: 1px solid var(--verde);
+    border-top: 2px solid var(--verde);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 6px 20px rgba(30,28,24,0.1);
+}
+
+.suggestion-item {
+    padding: 7px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.88rem;
+    font-family: var(--f-corpo);
+    color: var(--ink-2);
+    transition: background 0.1s;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+    background: var(--verde-ch);
+    color: var(--verde);
+}
+
+.suggestion-hidden {
+    font-size: 0.75rem;
+    color: var(--ink-3);
+    padding: 4px 12px;
+    font-family: var(--f-ui);
+}
+
+.suggestion-preferred {
+    font-weight: 700;
+}
+
+/* ── Alphabet navigation ── */
+
+.alphabet-nav {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 10px;
+    text-align: left;
+    line-height: 2;
+}
+
+.alphabet-nav button {
+    background: none;
+    border: none;
+    padding: 2px 5px;
+    margin: 0;
+    cursor: pointer;
+    font-family: var(--f-ui);
+    font-size: 0.78rem;
+    font-weight: 400;
+    color: var(--ink-3);
+    transition: color 0.12s;
+    letter-spacing: 0.02em;
+}
+
+.alphabet-nav button:hover {
+    color: var(--verde);
+}
+
+.alphabet-nav button.active {
+    color: var(--terra);
+    font-weight: 500;
+}
+
+/* ── Concept list ── */
+
+.concept-list {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+}
+
+.list-header {
+    background: var(--verde);
+    padding: 6px 12px;
+    font-family: var(--f-ui);
+    font-size: 0.68rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #ffffff;
+}
+
+.list-content {
+    max-height: calc(100vh - 280px);
+    overflow-y: auto;
+}
+
+.concept-items-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.concept-item {
+    padding: 5px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: var(--f-corpo);
+    color: var(--ink-2);
+    border-bottom: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+    transition: background 0.1s, color 0.1s;
+    line-height: 1.3;
+}
+
+.concept-item:nth-child(even) {
+    border-right: none;
+}
+
+.concept-item:hover {
+    background: var(--verde-ch);
+    color: var(--verde);
+}
+
+.concept-item.selected {
+    background: var(--terra-ch);
+    color: var(--terra);
+    font-style: italic;
+    border-left: 3px solid var(--terra);
+    padding-left: 7px;
+}
+
+.concept-item.label-alternative {
+    font-style: italic;
+    color: var(--ink-3);
+}
+
+.concept-item.label-hidden {
+    color: var(--ink-3);
+    font-size: 0.75rem;
+}
+
+/* ── Results groups ── */
+
+.results-group {
+    margin-bottom: 0;
+}
+
+.results-group-title {
+    background: var(--surface-2);
+    padding: 4px 12px;
+    font-family: var(--f-ui);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    border-bottom: 1px solid var(--border);
+    border-top: 1px solid var(--border);
+}
+
+.results-group-items {
+    display: grid;
+    gap: 0;
+}
+
+/* ── Concept detail ── */
+
+.concept-detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    max-height: calc(100vh - 110px);
+    overflow-y: auto;
+}
+
+/* Barra colorata superiore animata all'entrata */
+.concept-detail::before {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(to right, var(--verde) 0%, var(--sabbia) 50%, var(--terra) 100%);
+}
+
+/* Contenuto interno con padding */
+#conceptDetail,
+#emptyState {
+    padding: 28px 36px 40px;
+}
+
+/* ── Titolo lemma ── */
+
+.concept-title {
+    font-family: var(--f-titoli);
+    font-size: 1.9rem;
+    font-weight: 700;
+    color: var(--ink);
+    margin-bottom: 4px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+}
+
+/* Sottostriscia terracotta — marca editoriale */
+.concept-title::after {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 3px;
+    background: var(--terra);
+    margin-top: 10px;
+    margin-bottom: 18px;
+}
+
+/* ── Permalink ── */
+
+.permalink {
+    background: var(--canvas);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--sabbia);
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    margin-bottom: 24px;
+    word-break: break-all;
+    color: var(--ink-3);
+}
+
+.permalink code {
+    background: none;
+    color: var(--ink-2);
+    font-family: var(--f-mono);
+    font-size: 0.7rem;
+}
+
+/* ── Sezioni ── */
+
+.concept-section {
+    margin-bottom: 20px;
+    padding-bottom: 18px;
+    border-bottom: 1px solid var(--border);
+}
+
+.concept-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-family: var(--f-ui);
+    font-size: 0.65rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--verde);
+    margin-bottom: 8px;
+}
+
+.section-content {
+    font-size: 0.9rem;
+    font-family: var(--f-corpo);
+    line-height: 1.7;
+    color: var(--ink-2);
+}
+
+.section-content p {
+    margin-bottom: 8px;
+    text-align: justify;
+    hyphens: auto;
+}
+
+.section-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* ── Relation links ── */
+
+.relations {
+    display: inline;
+}
+
+.relation-item {
+    display: inline;
+    background: none;
+    padding: 0;
+    border: none;
+    font-family: var(--f-corpo);
+    font-size: 0.9rem;
+    font-style: italic;
+    color: var(--terra);
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px solid var(--terra-mid);
+    padding-bottom: 1px;
+    transition: color 0.12s, border-color 0.12s;
+}
+
+.relation-item:hover {
+    color: var(--verde);
+    border-bottom-color: var(--verde-mid);
+}
+
+.relation-item::after {
+    content: ", ";
+    color: var(--ink-2);
+    font-style: normal;
+    border: none;
+    padding-bottom: 0;
+}
+
+.relation-item:last-child::after {
+    content: "";
+}
+
+/* ── Empty state ── */
+
+.empty-state {
+    text-align: center;
+    color: var(--ink-3);
+    font-family: var(--f-corpo);
+    font-style: italic;
+    padding: 64px 20px;
+    font-size: 0.95rem;
+}
+
+.loading {
+    text-align: center;
+    padding: 32px;
+    color: var(--ink-3);
+    font-family: var(--f-ui);
+    font-size: 0.83rem;
+    letter-spacing: 0.04em;
+}
+
+/* ── Scrollbar ── */
+
+.list-content::-webkit-scrollbar,
+.concept-detail::-webkit-scrollbar,
+#searchSuggestions::-webkit-scrollbar {
+    width: 5px;
+}
+
+.list-content::-webkit-scrollbar-track,
+.concept-detail::-webkit-scrollbar-track,
+#searchSuggestions::-webkit-scrollbar-track {
+    background: var(--canvas);
+}
+
+.list-content::-webkit-scrollbar-thumb,
+.concept-detail::-webkit-scrollbar-thumb,
+#searchSuggestions::-webkit-scrollbar-thumb {
+    background: var(--border-mid);
+    border-radius: 2px;
+}
+
+.list-content::-webkit-scrollbar-thumb:hover,
+.concept-detail::-webkit-scrollbar-thumb:hover,
+#searchSuggestions::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-3);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1100px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    .left-panel {
+        position: static;
+    }
+    .concept-items-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+    .concept-detail {
+        max-height: none;
+    }
+    #conceptDetail, #emptyState {
+        padding: 20px 24px 28px;
+    }
+}
+
+@media (max-width: 768px) {
+    .concept-items-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .header-left {
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        width: 100%;
+    }
+    .language-selector {
+        padding: 8px 16px;
+    }
+    .concept-title {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .concept-items-grid {
+        grid-template-columns: 1fr;
+    }
+}

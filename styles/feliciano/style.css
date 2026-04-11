@@ -1,0 +1,603 @@
+/* ─────────────────────────────────────────────
+   Dizionario di metrica e stilistica italiana
+   Stile tipografico — Felice Feliciano (Verona, 1433 ca.)
+   Capitali romane · rosso e azzurro · fondo pergamena
+   ───────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&family=Cinzel:wght@400;600&display=swap');
+
+*, *::before, *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Palette — da miniatura quattrocentesca */
+    --perg:        #ffffff;   /* fondo pergamena */
+    --perg-ombra:  #f8f8f8;   /* pergamena più scura */
+    --perg-scura:  #fff4f4;   /* rigatura */
+    --rosso:       #9b2319;   /* rosso rubricato */
+    --rosso-vivo:  #c0311f;   /* rosso acceso */
+    --azzurro:     #1e4b8f;   /* azzurro oltremare */
+    --azzurro-ch:  #2e65b5;   /* azzurro chiaro */
+    --oro:         #8a6a1a;   /* oro brunito */
+    --oro-vivo:    #c8920a;   /* oro illuminato */
+    --inchiostro:  #1c1510;   /* inchiostro nero-bruno */
+    --ink-mid:     #3d3025;
+    --ink-faint:   #7a6a55;
+    --ink-ghost:   #b0a088;
+
+    /* Tipografia */
+    --f-tit:  'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
+    --f-body: 'IM Fell English', Palatino, 'Book Antiqua', Georgia, serif;
+    --f-ui:   'Cinzel', Palatino, serif;
+    --f-mono: 'Courier New', Courier, monospace;
+
+    --lh-body:  1.6;
+    --lh-tight: 1.25;
+}
+
+/* ── Base ── */
+
+body {
+    font-family: var(--f-body);
+    font-size: 14px;
+    line-height: var(--lh-body);
+    color: var(--inchiostro);
+    background-color: var(--perg);
+    background-image:
+        repeating-linear-gradient(
+            to bottom,
+            transparent,
+            transparent 27px,
+            rgba(180,160,100,0.13) 27px,
+            rgba(180,160,100,0.13) 28px
+        );
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+}
+
+/* ── Layout ── */
+
+.container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 0 14px 14px;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 310px 1fr;
+    gap: 16px;
+    align-items: start;
+}
+
+.left-panel {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* ── Header ── */
+
+header {
+    background: transparent;
+    border-bottom: 2px solid var(--rosso);
+    padding: 12px 4px 8px;
+    margin-bottom: 14px;
+    position: relative;
+}
+
+header::before {
+    content: '✦';
+    position: absolute;
+    left: 50%;
+    bottom: -0.7em;
+    transform: translateX(-50%);
+    font-size: 0.85rem;
+    color: var(--rosso);
+    background: var(--perg);
+    padding: 0 6px;
+    line-height: 1;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.header-left {
+    display: flex;
+    align-items: baseline;
+    gap: 16px;
+}
+
+h1 {
+    font-family: var(--f-tit);
+    font-size: 1.15rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--rosso);
+}
+
+.subtitle {
+    font-family: var(--f-body);
+    font-size: 0.78rem;
+    font-style: italic;
+    color: var(--azzurro);
+    letter-spacing: 0.02em;
+}
+
+/* ── Language selector ── */
+
+.language-selector {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+    font-family: var(--f-ui);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+}
+
+.language-selector label {
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+.language-selector select {
+    padding: 2px 4px;
+    border: 1px solid var(--perg-scura);
+    border-radius: 0;
+    font-size: 0.68rem;
+    font-family: var(--f-ui);
+    background: var(--perg-ombra);
+    color: var(--ink-mid);
+    cursor: pointer;
+    appearance: none;
+}
+
+.language-selector select:focus {
+    outline: none;
+    border-color: var(--azzurro);
+}
+
+/* ── Search ── */
+
+.search-box {
+    position: relative;
+    background: var(--perg-ombra);
+    padding: 8px;
+    border: 1px solid var(--perg-scura);
+    border-left: 3px solid var(--azzurro);
+}
+
+#searchInput {
+    width: 100%;
+    padding: 5px 0 5px 2px;
+    font-size: 0.88rem;
+    font-family: var(--f-body);
+    font-style: italic;
+    border: none;
+    border-bottom: 1px solid var(--perg-scura);
+    border-radius: 0;
+    background: transparent;
+    color: var(--inchiostro);
+}
+
+#searchInput::placeholder {
+    color: var(--ink-ghost);
+    font-style: italic;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-bottom-color: var(--rosso);
+}
+
+#searchSuggestions {
+    position: absolute;
+    top: 100%;
+    left: 8px;
+    right: 8px;
+    background: var(--perg);
+    border: 1px solid var(--perg-scura);
+    border-top: 2px solid var(--azzurro);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1000;
+    display: none;
+    box-shadow: 3px 4px 12px rgba(60,40,10,0.15);
+}
+
+.suggestion-item {
+    padding: 6px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid var(--perg-ombra);
+    font-size: 0.85rem;
+    font-family: var(--f-body);
+    color: var(--ink-mid);
+}
+
+.suggestion-item:hover,
+.suggestion-item.highlighted {
+    background-color: var(--perg-ombra);
+    color: var(--rosso);
+}
+
+.suggestion-hidden {
+    font-size: 0.7rem;
+    font-family: var(--f-body);
+    color: var(--ink-ghost);
+    padding: 3px 10px;
+    opacity: 0.7;
+}
+
+.suggestion-preferred {
+    font-weight: bold;
+}
+
+/* ── Alphabet navigation ── */
+
+.alphabet-nav {
+    background: var(--perg-ombra);
+    border: 1px solid var(--perg-scura);
+    padding: 6px 8px;
+    text-align: center;
+    line-height: 1.9;
+}
+
+.alphabet-nav button {
+    background: none;
+    border: none;
+    padding: 1px 5px;
+    margin: 0 1px;
+    cursor: pointer;
+    font-family: var(--f-tit);
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    transition: color 0.12s;
+}
+
+.alphabet-nav button:hover {
+    color: var(--azzurro);
+}
+
+.alphabet-nav button.active {
+    color: var(--rosso);
+    font-weight: 600;
+}
+
+/* ── Concept list ── */
+
+.concept-list {
+    background: var(--perg-ombra);
+    border: 1px solid var(--perg-scura);
+    border-top: 3px solid var(--rosso);
+    overflow: hidden;
+}
+
+.list-header {
+    background: var(--perg-scura);
+    padding: 5px 10px;
+    border-bottom: 1px solid var(--perg-scura);
+    font-family: var(--f-tit);
+    font-size: 0.65rem;
+    font-weight: 400;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--azzurro);
+}
+
+.list-content {
+    max-height: calc(100vh - 240px);
+    overflow-y: auto;
+    padding: 2px 0;
+}
+
+.concept-items-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+}
+
+.concept-item {
+    padding: 4px 10px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: var(--f-body);
+    color: var(--ink-mid);
+    border-bottom: 1px solid rgba(180,160,100,0.2);
+    line-height: var(--lh-tight);
+    transition: background-color 0.1s, color 0.1s;
+}
+
+.concept-item:hover {
+    background-color: rgba(155,35,25,0.07);
+    color: var(--rosso);
+}
+
+.concept-item.selected {
+    background-color: rgba(30,75,143,0.1);
+    color: var(--azzurro);
+    font-style: italic;
+}
+
+.concept-item.label-alternative {
+    font-style: italic;
+    color: var(--ink-faint);
+}
+
+.concept-item.label-hidden {
+    color: var(--ink-ghost);
+    font-size: 0.72rem;
+}
+
+/* ── Results groups ── */
+
+.results-group {
+    margin-bottom: 6px;
+}
+
+.results-group-title {
+    background: var(--perg-scura);
+    padding: 3px 10px;
+    font-family: var(--f-tit);
+    font-size: 0.62rem;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--azzurro);
+    border-bottom: 1px solid var(--perg-scura);
+}
+
+.results-group-items {
+    display: grid;
+    gap: 0;
+}
+
+/* ── Concept detail (right panel) ── */
+
+.concept-detail {
+    background: var(--perg);
+    padding: 28px 36px 36px;
+    border: 1px solid var(--perg-scura);
+    border-top: 3px solid var(--azzurro);
+    max-height: calc(100vh - 100px);
+    overflow-y: auto;
+    position: relative;
+}
+
+/* Cornice ornamentale angolare */
+.concept-detail::before,
+.concept-detail::after {
+    content: '✦';
+    position: absolute;
+    font-size: 0.7rem;
+    color: var(--oro-vivo);
+    line-height: 1;
+}
+.concept-detail::before { top: 8px; left: 12px; }
+.concept-detail::after  { top: 8px; right: 12px; }
+
+/* ── Titolo lemma — iniziale maiuscola in rosso, stile rubrica ── */
+
+.concept-title {
+    font-family: var(--f-tit);
+    font-size: 1.6rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--azzurro);
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    line-height: var(--lh-tight);
+    position: relative;
+}
+
+/* Prima lettera in rosso */
+.concept-title::first-letter {
+    color: var(--rosso-vivo);
+    font-size: 2rem;
+}
+
+.concept-title::after {
+    content: '';
+    display: block;
+    margin-top: 10px;
+    height: 1px;
+    background: linear-gradient(to right, var(--rosso), var(--perg-scura), var(--azzurro));
+    opacity: 0.6;
+}
+
+/* ── Permalink ── */
+
+.permalink {
+    background: var(--perg-ombra);
+    border-left: 3px solid var(--perg-scura);
+    padding: 5px 10px;
+    font-family: var(--f-mono);
+    font-size: 0.67rem;
+    margin-bottom: 18px;
+    word-break: break-all;
+    color: var(--ink-ghost);
+}
+
+.permalink code {
+    background: none;
+    color: var(--ink-faint);
+    font-family: var(--f-mono);
+    font-size: 0.67rem;
+}
+
+/* ── Sezioni ── */
+
+.concept-section {
+    margin-bottom: 16px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--perg-ombra);
+}
+
+.concept-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+/* Titoli sezione: rubricati in rosso */
+.section-title {
+    font-family: var(--f-tit);
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--rosso);
+    margin-bottom: 7px;
+    padding-left: 2px;
+    border-left: 2px solid var(--rosso);
+    padding-left: 6px;
+}
+
+/* Alternanza rosso/azzurro per sezioni pari/dispari — stile rubricatura */
+.concept-section:nth-child(even) .section-title {
+    color: var(--azzurro);
+    border-left-color: var(--azzurro);
+}
+
+.section-content {
+    font-size: 0.88rem;
+    font-family: var(--f-body);
+    line-height: var(--lh-body);
+    color: var(--ink-mid);
+}
+
+.section-content p {
+    margin-bottom: 7px;
+    text-align: justify;
+    hyphens: auto;
+}
+
+.section-content p:last-child {
+    margin-bottom: 0;
+}
+
+/* ── Link di relazione — in azzurro oltremare ── */
+
+.relations {
+    display: inline;
+}
+
+.relation-item {
+    display: inline;
+    background: none;
+    padding: 0;
+    border: none;
+    font-family: var(--f-body);
+    font-size: 0.88rem;
+    font-style: italic;
+    color: var(--azzurro-ch);
+    cursor: pointer;
+    text-decoration: none;
+    border-bottom: 1px dotted var(--azzurro-ch);
+    transition: color 0.12s, border-color 0.12s;
+}
+
+.relation-item:hover {
+    color: var(--rosso);
+    border-bottom-color: var(--rosso);
+}
+
+.relation-item::after {
+    content: ", ";
+    color: var(--ink-mid);
+    font-style: normal;
+    border: none;
+}
+
+.relation-item:last-child::after {
+    content: "";
+}
+
+/* ── Empty state ── */
+
+.empty-state {
+    text-align: center;
+    color: var(--ink-ghost);
+    font-family: var(--f-body);
+    font-style: italic;
+    padding: 56px 20px;
+    font-size: 0.9rem;
+}
+
+.empty-state::before {
+    content: '✦  ✦  ✦';
+    display: block;
+    font-style: normal;
+    font-size: 0.7rem;
+    letter-spacing: 0.5em;
+    color: var(--oro-vivo);
+    margin-bottom: 18px;
+    opacity: 0.6;
+}
+
+.loading {
+    text-align: center;
+    padding: 28px;
+    color: var(--ink-ghost);
+    font-family: var(--f-body);
+    font-style: italic;
+    font-size: 0.85rem;
+}
+
+/* ── Scrollbar ── */
+
+.list-content::-webkit-scrollbar,
+.concept-detail::-webkit-scrollbar,
+#searchSuggestions::-webkit-scrollbar {
+    width: 6px;
+}
+
+.list-content::-webkit-scrollbar-track,
+.concept-detail::-webkit-scrollbar-track,
+#searchSuggestions::-webkit-scrollbar-track {
+    background: var(--perg-ombra);
+}
+
+.list-content::-webkit-scrollbar-thumb,
+.concept-detail::-webkit-scrollbar-thumb,
+#searchSuggestions::-webkit-scrollbar-thumb {
+    background: var(--perg-scura);
+    border-radius: 2px;
+}
+
+.list-content::-webkit-scrollbar-thumb:hover,
+.concept-detail::-webkit-scrollbar-thumb:hover,
+#searchSuggestions::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-ghost);
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 1024px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    .concept-items-grid {
+        grid-template-columns: 1fr;
+    }
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    h1 { font-size: 1rem; }
+    .concept-detail { padding: 18px 20px 28px; }
+}
+
+@media (max-width: 768px) {
+    .concept-items-grid { grid-template-columns: 1fr; }
+    body { background-image: none; }
+}
