@@ -20,5 +20,8 @@
   "historyNotes": "Note storiche",
   "editorialNotes": "Note editoriali",
   "examples": "Esempi",
-  "permalink": "Link diretto"
+  "permalink": "Link diretto",
+  "conceptsGroup": "Concetti",
+  "alternativeFormsGroup": "Etichette alternative",
+  "variantsGroup": "Varianti"
 }
