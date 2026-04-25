@@ -67,7 +67,7 @@
                     <div class="search-options">
                         <label>
                             <input type="checkbox" id="fullWordSearch">
-                            <span data-i18n="fullWordSearch">Full word</span>
+                            <span id="fullWordSearch_label">Full word</span>
                         </label>
                     </div>
                 </div>
@@ -219,6 +219,7 @@
                 document.getElementById('searchInput').placeholder = this.translations.searchPlaceholder;
                 document.getElementById('listTitle').textContent = this.translations.listTitle;
                 document.getElementById('emptyState').textContent = this.translations.emptyState;
+                document.getElementById('fullWordSearch_label').textContent = this.translations.fullWordSearch;
                 document.documentElement.lang = this.currentUILanguage;
             }
 
