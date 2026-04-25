@@ -94,6 +94,23 @@ h1 {
     border: 1px solid #ddd;
 }
 
+.search-options {
+    margin-top: 6px;
+    font-size: 0.75rem;
+}
+
+.search-options label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+    color: #666;
+}
+
+.search-options input[type="checkbox"] {
+    cursor: pointer;
+}
+
 #searchInput {
     width: 100%;
     padding: 6px 8px;

@@ -4,6 +4,7 @@
   "uiLanguageLabel": "Lingua interfaccia:",
   "contentLanguageLabel": "Lingua contenuti:",
   "searchPlaceholder": "Cerca un concetto...",
+  "fullWordSearch": "Parola intera",
   "listTitle": "Seleziona una lettera o cerca un concetto",
   "emptyState": "Seleziona un concetto dalla lista per visualizzarne i dettagli",
   "loading": "Caricamento...",

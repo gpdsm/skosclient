@@ -64,6 +64,12 @@
             <div class="left-panel">
                 <div class="search-box">
                     <input type="search" id="searchInput" placeholder="Search for a concept..." autocomplete="off">
+                    <div class="search-options">
+                        <label>
+                            <input type="checkbox" id="fullWordSearch">
+                            <span data-i18n="fullWordSearch">Full word</span>
+                        </label>
+                    </div>
                 </div>
 
                 <div class="alphabet-nav" id="alphabetNav"></div>
@@ -314,6 +320,11 @@
                         this.handleSearch(e.target.value);
                     }, 300); // Debounce 300ms
                 });
+                document.getElementById('fullWordSearch').addEventListener('change', (e) => {
+                    if (searchInput.value) {
+                        this.handleSearch(searchInput.value);
+                    }
+                });
             }
 
             generatePermalink(conceptId) {
@@ -332,8 +343,17 @@
                     return;
                 }
                 
+                const fullWordSearch = document.getElementById('fullWordSearch').checked;
                 const matchingLabels = Object.keys(this.labelsToConceptId)
-                    .filter(label => label.substring(1).toLowerCase().includes(query.toLowerCase()))
+                    .filter(label => {
+                        const labelText = label.substring(1).toLowerCase();
+                        const searchQuery = query.toLowerCase();
+                        if (fullWordSearch) {
+                            const regex = new RegExp(`\\b${searchQuery.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i');
+                            return regex.test(labelText);
+                        }
+                        return labelText.includes(searchQuery);
+                    })
                     .sort();
                 
                 const title = `${matchingLabels.length} results for "${query}"`;

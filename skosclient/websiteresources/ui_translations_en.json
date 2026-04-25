@@ -4,6 +4,7 @@
   "uiLanguageLabel": "Interface language:",
   "contentLanguageLabel": "Content language:",
   "searchPlaceholder": "Search a concept...",
+  "fullWordSearch": "Full word",
   "listTitle": "Select a letter or search for a concept",
   "emptyState": "Select a concept from the list to view its details",
   "loading": "Loading...",

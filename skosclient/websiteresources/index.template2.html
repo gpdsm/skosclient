@@ -27,6 +27,12 @@
             <div class="left-panel">
                 <div class="search-box">
                     <input type="search" id="searchInput" placeholder="Search for a concept..." autocomplete="off">
+                    <div class="search-options">
+                        <label>
+                            <input type="checkbox" id="fullWordSearch">
+                            <span data-i18n="fullWordSearch">Full word</span>
+                        </label>
+                    </div>
                     <div id="searchSuggestions"></div>
                 </div>
 
@@ -344,6 +350,11 @@
                         document.getElementById('searchSuggestions').style.display = 'block';
                     }
                 });
+                document.getElementById('fullWordSearch').addEventListener('change', (e) => {
+                    if (searchInput.value) {
+                        this.handleSearch(searchInput.value);
+                    }
+                });
                 document.addEventListener('click', (e) => {
                     if (!e.target.closest('.search-box')) {
                         this.hideSuggestions();
@@ -512,8 +523,16 @@
             }
 
             findMatchingLabels(query) {
+                const fullWordSearch = document.getElementById('fullWordSearch').checked;
                 return Object.keys(this.labelsToConceptId)
-                    .filter(label => label.substring(1).toLowerCase().includes(query))
+                    .filter(label => {
+                        const labelText = label.substring(1).toLowerCase();
+                        if (fullWordSearch) {
+                            const regex = new RegExp(`\\b${query.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&')}\\b`, 'i');
+                            return regex.test(labelText);
+                        }
+                        return labelText.includes(query);
+                    })
                     .sort();
             }
 
