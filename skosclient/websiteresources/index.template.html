@@ -190,7 +190,9 @@
                     narrowerConcepts: "Narrower concepts",
                     relatedConcepts: "Related concepts",
                     examples: "Examples",
-                    permalink: "Permalink"
+                    permalink: "Permalink",
+                    string_results: "{count} results containing the string \"{query}\"",
+                    full_word_results: "{count} results matching the full word \"{query}\""
                 }, this.translations);
             }
 
@@ -357,8 +359,15 @@
                     })
                     .sort();
                 
-                const title = `${matchingLabels.length} results for "${query}"`;
-                this.displayGroupedResults(matchingLabels, title);
+                if (fullWordSearch) {
+                    const titleTemplate = this.translations.full_word_results || "{count} results matching the full word \"{query}\"";
+                    const title = titleTemplate.replace('{count}', matchingLabels.length).replace('{query}', query);
+                    this.displayGroupedResults(matchingLabels, title);
+                } else {
+                    const titleTemplate = this.translations.string_results || "{count} results containing the string \"{query}\"";
+                    const title = titleTemplate.replace('{count}', matchingLabels.length).replace('{query}', query);
+                    this.displayGroupedResults(matchingLabels, title);
+                }
             }
 
             generateAlphabet() {

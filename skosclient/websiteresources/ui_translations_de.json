@@ -21,5 +21,7 @@
   "historyNotes": "Historische Anmerkungen",
   "editorialNotes": "Redaktionelle Anmerkungen",
   "examples": "Beispiele",
-  "permalink": "Direkter Link"
+  "permalink": "Direkter Link",
+  "full_word_results": "{count} Ergebnisse, die genau \"{query}\" entsprechen",
+  "string_results": "{count} Ergebnisse, die die Zeichenfolge \"{query}\" enthalten"
 }

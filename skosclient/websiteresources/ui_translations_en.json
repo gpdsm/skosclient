@@ -21,5 +21,7 @@
   "historyNotes": "Historical notes",
   "editorialNotes": "Editorial notes",
   "examples": "Examples",
-  "permalink": "Direct link"
+  "permalink": "Direct link",
+  "full_word_results": "{count} results matching the full word \"{query}\"",
+  "string_results": "{count} results containing the string \"{query}\""
 }

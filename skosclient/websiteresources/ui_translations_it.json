@@ -24,5 +24,7 @@
   "permalink": "Link diretto",
   "conceptsGroup": "Concetti",
   "alternativeFormsGroup": "Etichette alternative",
-  "variantsGroup": "Varianti"
+  "variantsGroup": "Varianti",
+  "string_results": "{count} risultati contenenti la stringa \"{query}\"",
+  "full_word_results": "{count} risultati corrispondenti alla parola intera \"{query}\""
 }
