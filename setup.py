@@ -17,7 +17,7 @@ setup(
     url="https://github.com/yourusername/skosclient",
     packages=find_packages(),
     package_data={
-        'skosclient': ['websiteresources/*.html', 'websiteresources/*.json'],
+        'skosclient': ['websiteresources/*.html', 'websiteresources/*.json','websiteresources/*.js','websiteresources/*.css'],
     },
     classifiers=[
         "Development Status :: 4 - Beta",
