@@ -41,6 +41,46 @@
         .concept-item.label-hidden {
             color: #888;
         }
+        
+        /* Metadata display styles */
+        .metadata-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #333;
+            border-bottom: 2px solid #4a90d9;
+            padding-bottom: 8px;
+        }
+        
+        .metadata-section {
+            margin-bottom: 12px;
+        }
+        
+        .metadata-label {
+            font-weight: 600;
+            color: #555;
+            font-size: 0.85rem;
+            margin-bottom: 2px;
+        }
+        
+        .metadata-value {
+            color: #333;
+        }
+        
+        .metadata-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 8px;
+            margin-top: 8px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        
+        .metadata-stats div {
+            font-size: 0.85rem;
+            color: #555;
+        }
     </style>
 </head>
 <body>
@@ -156,6 +196,9 @@
                     window.history.replaceState({}, '', url);
                     this.selectedConcept = this.urlConceptId;
                     this.displayConceptDetail(this.concepts[this.urlConceptId]);
+                } else {
+                    // No concept specified, show metadata on initial load
+                    this.showMetadata();
                 }
             }
 
@@ -192,7 +235,23 @@
                     examples: "Examples",
                     permalink: "Permalink",
                     string_results: "{count} results containing the string \"{query}\"",
-                    full_word_results: "{count} results matching the full word \"{query}\""
+                    full_word_results: "{count} results matching the full word \"{query}\"",
+                    metadataTitle: "Thesaurus Information",
+                    creator: "Creator",
+                    created: "Created",
+                    modified: "Modified",
+                    version: "Version",
+                    source_file: "Source file",
+                    base_uri: "Base URI",
+                    extraction_date: "Extraction date",
+                    statistics: "Statistics",
+                    totalConcepts: "Total concepts",
+                    totalLabels: "Total labels",
+                    conceptsWithBroader: "Concepts with broader",
+                    conceptsWithNarrower: "Concepts with narrower",
+                    conceptsWithRelated: "Concepts with related",
+                    conceptsWithAltLabels: "Concepts with alt labels",
+                    conceptsWithDefinitions: "Concepts with definitions"
                 }, this.translations);
             }
 
@@ -207,6 +266,12 @@
                             this.metadata.title["no-lang"];
                 }
                 titleEl.textContent = title || this.translations.pageTitle;
+                
+                // Add click handler to show metadata
+                titleEl.style.cursor = 'pointer';
+                titleEl.addEventListener('click', () => {
+                    this.showMetadata();
+                });
                 
                 let description = null;
                 if (this.metadata?.description && typeof this.metadata.description === 'object') {
@@ -246,6 +311,77 @@
                     if (!this.currentLanguage) this.currentLanguage = 'en';
                     this.populateLanguageSelectors();
                 }
+            }
+            showMetadata() {
+                const emptyState = document.getElementById('emptyState');
+                const detailContainer = document.getElementById('conceptDetail');
+                
+                emptyState.style.display = 'none';
+                detailContainer.style.display = 'block';
+                
+                let html = '';
+                
+                // Show title as header
+                let title = null;
+                if (this.metadata?.title && typeof this.metadata.title === 'object') {
+                    title = this.metadata.title[this.currentLanguage] || 
+                            this.metadata.title[this.currentUILanguage] || 
+                            this.metadata.title["no-lang"];
+                }
+                html += `<div class="metadata-title">${title || this.translations.pageTitle}</div>`;
+                
+                // Show description
+                if (this.metadata?.description && typeof this.metadata.description === 'object') {
+                    const description = this.metadata.description[this.currentLanguage] || 
+                                       this.metadata.description[this.currentUILanguage] || 
+                                       this.metadata.description["no-lang"];
+                    if (description) {
+                        html += `<div class="metadata-section"><p>${description}</p></div>`;
+                    }
+                }
+                
+                // Show metadata fields
+                const metadataFields = [
+                    { key: 'creator', labelKey: 'creator' },
+                    { key: 'created', labelKey: 'created' },
+                    { key: 'modified', labelKey: 'modified' },
+                    { key: 'version', labelKey: 'version' },
+                    { key: 'source_file', labelKey: 'source_file' },
+                    { key: 'base_uri', labelKey: 'base_uri' },
+                    { key: 'extraction_date', labelKey: 'extraction_date' }
+                ];
+                
+                metadataFields.forEach(field => {
+                    if (this.metadata[field.key]) {
+                        const label = this.translations[field.labelKey] || field.labelKey;
+                        html += `
+                            <div class="metadata-section">
+                                <div class="metadata-label">${label}:</div>
+                                <div class="metadata-value">${this.metadata[field.key]}</div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                // Show statistics if available
+                if (this.metadata?.statistics_by_language) {
+                    const stats = this.metadata.statistics_by_language[this.currentLanguage];
+                    if (stats) {
+                        const statsLabel = this.translations.statistics || 'Statistics';
+                        html += `<div class="metadata-section"><div class="metadata-label">${statsLabel} (${this.currentLanguage}):</div>`;
+                        html += `<div class="metadata-stats">`;
+                        html += `<div>${this.translations.totalConcepts || 'Total concepts'}: ${stats.total_concepts}</div>`;
+                        html += `<div>${this.translations.totalLabels || 'Total labels'}: ${stats.total_labels}</div>`;
+                        if (stats.concepts_with_broader) html += `<div>${this.translations.conceptsWithBroader || 'Concepts with broader'}: ${stats.concepts_with_broader}</div>`;
+                        if (stats.concepts_with_narrower) html += `<div>${this.translations.conceptsWithNarrower || 'Concepts with narrower'}: ${stats.concepts_with_narrower}</div>`;
+                        if (stats.concepts_with_related) html += `<div>${this.translations.conceptsWithRelated || 'Concepts with related'}: ${stats.concepts_with_related}</div>`;
+                        if (stats.concepts_with_alt_labels) html += `<div>${this.translations.conceptsWithAltLabels || 'Concepts with alt labels'}: ${stats.concepts_with_alt_labels}</div>`;
+                        if (stats.concepts_with_definitions) html += `<div>${this.translations.conceptsWithDefinitions || 'Concepts with definitions'}: ${stats.concepts_with_definitions}</div>`;
+                        html += `</div></div>`;
+                    }
+                }
+                
+                detailContainer.innerHTML = html;
             }
 
             populateLanguageSelectors() {

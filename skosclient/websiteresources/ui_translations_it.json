@@ -26,5 +26,21 @@
   "alternativeFormsGroup": "Etichette alternative",
   "variantsGroup": "Varianti",
   "string_results": "{count} risultati contenenti la stringa \"{query}\"",
-  "full_word_results": "{count} risultati corrispondenti alla parola intera \"{query}\""
+  "full_word_results": "{count} risultati corrispondenti alla parola intera \"{query}\"",
+  "metadataTitle": "Informazioni sul thesaurus",
+  "creator": "Creatore",
+  "created": "Creato",
+  "modified": "Modificato",
+  "version": "Versione",
+  "source_file": "File sorgente",
+  "base_uri": "URI base",
+  "extraction_date": "Data di estrazione",
+  "statistics": "Statistiche",
+  "totalConcepts": "Totale concetti",
+  "totalLabels": "Totale etichette",
+  "conceptsWithBroader": "Concetti più generali",
+  "conceptsWithNarrower": "Concetti più specifici",
+  "conceptsWithRelated": "Concetti correlati",
+  "conceptsWithAltLabels": "Concetti con etichette alternative",
+  "conceptsWithDefinitions": "Concetti con definizioni"
 }

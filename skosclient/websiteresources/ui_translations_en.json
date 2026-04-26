@@ -23,5 +23,21 @@
   "examples": "Examples",
   "permalink": "Direct link",
   "full_word_results": "{count} results matching the full word \"{query}\"",
-  "string_results": "{count} results containing the string \"{query}\""
+  "string_results": "{count} results containing the string \"{query}\"",
+  "metadataTitle": "Thesaurus Information",
+  "creator": "Creator",
+  "created": "Created",
+  "modified": "Modified",
+  "version": "Version",
+  "source_file": "Source file",
+  "base_uri": "Base URI",
+  "extraction_date": "Extraction date",
+  "statistics": "Statistics",
+  "totalConcepts": "Total concepts",
+  "totalLabels": "Total labels",
+  "conceptsWithBroader": "Concepts with broader",
+  "conceptsWithNarrower": "Concepts with narrower",
+  "conceptsWithRelated": "Concepts with related",
+  "conceptsWithAltLabels": "Concepts with alt labels",
+  "conceptsWithDefinitions": "Concepts with definitions"
 }
