@@ -54,6 +54,18 @@ def main():
         default="turtle",
         help="Input file format (default: turtle)"
     )
+
+    parser.add_argument(
+        "--concept-external-search-url",
+        type=str,
+        help="URL for external concept search (optional)"
+    )
+
+    parser.add_argument(
+        "--alternative-labels-external-url",
+        type=str,
+        help="URL for external alternative labels search (optional)"
+    )
     
     args = parser.parse_args()
     
@@ -84,7 +96,10 @@ def main():
     # Create extractor and process
     try:
         print(f"Starting the extractor for creating the SKOS app at {output_path}...")
-        generate_website(base_uri=args.base_uri,verobse=args.verbose,output_path=output_path,input_path=input_path,file_format=args.format)
+        generate_website(base_uri=args.base_uri,verbose=args.verbose,output_path=output_path,
+                         input_path=input_path,file_format=args.format,
+                         concept_external_search_url=args.concept_external_search_url,
+                         alternative_labels_external_url=args.alternative_labels_external_url)
     except KeyboardInterrupt:
         print("\n Operation cancelled by user", file=sys.stderr)
         sys.exit(1)

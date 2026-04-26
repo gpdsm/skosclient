@@ -23,14 +23,17 @@ def render_template(name: str, **kwargs) -> str:
         raise KeyError(f"Missing template variable: {e}")
 
 
-def generate_website(base_uri, verobse, output_path, input_path, file_format):
-    extractor = SKOSExtractor(base_uri=base_uri, verbose=verobse)
+def generate_website(base_uri, verbose, output_path, input_path, file_format,
+                     concept_external_search_url=None, alternative_labels_external_url=None):
+    extractor = SKOSExtractor(base_uri=base_uri, verbose=verbose)
     str_output_path = str(output_path)
     print(f"Processing {input_path}...")
     result = extractor.extract(
         input_file=str(input_path),
         output_dir=str_output_path,
-        file_format=file_format
+        file_format=file_format,
+        concept_external_search_url=concept_external_search_url,
+        alternative_labels_external_url=alternative_labels_external_url
     )
 
     print(f"Successfully processed thesaurus!")

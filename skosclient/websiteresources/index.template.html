@@ -636,8 +636,12 @@
                 emptyState.style.display = 'none';
                 detailContainer.style.display = 'block';
                 
+
                 let html = `<div class="concept-title">${concept.prefLabel}</div>`;
-                
+                if (this.metadata.concept_external_search_url) {
+                    const searchUrl = this.metadata.concept_external_search_url.replace('{id}', concept.id);
+                    html += `<div class="external-search"><a href="${searchUrl}" target="_blank">🔎</a></div>`;
+                } 
                 if (this.selectedConcept) {
                     const permalink = this.generatePermalink(this.selectedConcept);
                     html += `

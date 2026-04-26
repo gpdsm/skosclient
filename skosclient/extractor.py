@@ -57,7 +57,7 @@ class SKOSExtractor:
         if self.verbose:
             print(f"[{level}] {message}")
     
-    def extract(self, input_file: str, output_dir: str, file_format: str = "turtle") -> ExtractionResult:
+    def extract(self, input_file: str, output_dir: str, file_format: str = "turtle", concept_external_search_url: Optional[str] = None, alternative_labels_external_url: Optional[str] = None) -> ExtractionResult:
         """
         Extract SKOS thesaurus from file
         
@@ -65,7 +65,9 @@ class SKOSExtractor:
             input_file: Path to input RDF file
             output_dir: Directory to save output files
             file_format: RDF format (turtle, xml, n3, nt)
-            
+            concept_external_search_url: URL for external concept search
+            alternative_labels_external_url: URL for external alternative labels search
+
         Returns:
             ExtractionResult with processing information
         """
@@ -89,7 +91,8 @@ class SKOSExtractor:
         
         # Extract metadata
         metadata = self._extract_metadata(languages, no_lang_analysis, input_file)
-        
+        metadata["concept_external_search_url"] = concept_external_search_url
+        metadata["alternative_labels_external_url"] = alternative_labels_external_url
         # Process each language
         all_stats = {}
         total_relations_added = {"broader_from_narrower": 0, "narrower_from_broader": 0, "related_symmetric": 0}
@@ -180,7 +183,7 @@ class SKOSExtractor:
             "modified": None,
             "version": None,
             "source_file": Path(input_file).name,
-            "no_lang_analysis": no_lang_analysis
+            "no_lang_analysis": no_lang_analysis,
         }
         # SIMPLIFIED: Find all skos:ConceptScheme directly
         schemes = list(self.graph.subjects(predicate=RDF.type, object=self.skos.ConceptScheme))
