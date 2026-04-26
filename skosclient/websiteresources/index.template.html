@@ -635,13 +635,20 @@
                 
                 emptyState.style.display = 'none';
                 detailContainer.style.display = 'block';
-                
+                let searchIconHtml = "";
 
-                let html = `<div class="concept-title">${concept.prefLabel}</div>`;
                 if (this.metadata.concept_external_search_url) {
-                    const searchUrl = this.metadata.concept_external_search_url.replace('{id}', concept.id);
-                    html += `<div class="external-search"><a href="${searchUrl}" target="_blank">🔎</a></div>`;
-                } 
+                    let searchUrl = this.metadata.concept_external_search_url.replace('{id}', encodeURIComponent(this.selectedConcept));
+                    
+                    if (!searchUrl.startsWith('http://') && !searchUrl.startsWith('https://')) {
+                        searchUrl = 'https://' + searchUrl;
+                    }
+                    
+                    searchIconHtml = `<a href="${searchUrl}" target="_blank" style="text-decoration: none; margin-left: 8px; font-size: 0.9em;">🔎</a>`;
+                }
+
+                // Everything in one line
+                let html = `<div class="concept-title">${concept.prefLabel} ${searchIconHtml}</div>`;
                 if (this.selectedConcept) {
                     const permalink = this.generatePermalink(this.selectedConcept);
                     html += `
