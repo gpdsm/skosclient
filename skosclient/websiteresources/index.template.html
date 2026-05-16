@@ -5,83 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKOS Dictionary</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        /* Additional styles for grouped results */
-        .results-group {
-            margin-bottom: 12px;
-        }
-        
-        .results-group-title {
-            background: #f0f0f0;
-            padding: 4px 8px;
-            font-size: 0.75rem;
-            font-weight: 600;
-            color: #555;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            border-bottom: 1px solid #ddd;
-            margin-bottom: 2px;
-        }
-        
-        .results-group-items {
-            display: grid;
-            gap: 0;
-        }
-        
-        /* Different styles for different label types */
-        .concept-item.label-preferred {
-            /* Default style - preferred labels */
-        }
-        
-        .concept-item.label-alternative {
-            font-style: italic;
-            color: #666;
-        }
-                
-        .concept-item.label-hidden {
-            color: #888;
-        }
-        
-        /* Metadata display styles */
-        .metadata-title {
-            font-size: 1.5rem;
-            font-weight: 600;
-            margin-bottom: 16px;
-            color: #333;
-            border-bottom: 2px solid #4a90d9;
-            padding-bottom: 8px;
-        }
-        
-        .metadata-section {
-            margin-bottom: 12px;
-        }
-        
-        .metadata-label {
-            font-weight: 600;
-            color: #555;
-            font-size: 0.85rem;
-            margin-bottom: 2px;
-        }
-        
-        .metadata-value {
-            color: #333;
-        }
-        
-        .metadata-stats {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 8px;
-            margin-top: 8px;
-            padding: 12px;
-            background: #f8f9fa;
-            border-radius: 4px;
-        }
-        
-        .metadata-stats div {
-            font-size: 0.85rem;
-            color: #555;
-        }
-    </style>
 </head>
 <body>
     <div class="container">
@@ -649,15 +572,6 @@
 
                 // Everything in one line
                 let html = `<div class="concept-title">${concept.prefLabel} ${searchIconHtml}</div>`;
-                if (this.selectedConcept) {
-                    const permalink = this.generatePermalink(this.selectedConcept);
-                    html += `
-                        <div class="permalink">
-                            <strong>${this.translations.permalink}:</strong><br>
-                            <code>${permalink}</code>
-                        </div>
-                    `;
-                }
                 
                 if (concept.definition?.length > 0) {
                     html += `
@@ -731,6 +645,15 @@
                     `;
                 }
                 
+                if (this.selectedConcept) {
+                    const permalink = this.generatePermalink(this.selectedConcept);
+                    html += `
+                        <div class="permalink">
+                            <strong>${this.translations.permalink}:</strong><br>
+                            <code>${permalink}</code>
+                        </div>
+                    `;
+                }
                 detailContainer.innerHTML = html;
                 
                 document.querySelectorAll('.relation-item').forEach(item => {
