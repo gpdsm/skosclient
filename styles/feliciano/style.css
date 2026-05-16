@@ -14,9 +14,9 @@
 
 :root {
     /* Palette — da miniatura quattrocentesca */
-    --perg:        #ffffff;   /* fondo pergamena */
-    --perg-ombra:  #f8f8f8;   /* pergamena più scura */
-    --perg-scura:  #fff4f4;   /* rigatura */
+    --perg:        #fffef8;   /* fondo pergamena */
+    --perg-ombra:  #fcfcfb;   /* pergamena più scura */
+    --perg-scura:  #faf2f2;   /* rigatura */
     --rosso:       #9b2319;   /* rosso rubricato */
     --rosso-vivo:  #c0311f;   /* rosso acceso */
     --azzurro:     #1e4b8f;   /* azzurro oltremare */
@@ -30,7 +30,7 @@
 
     /* Tipografia */
     --f-tit:  'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
-    --f-body: 'IM Fell English', Palatino, 'Book Antiqua', Georgia, serif;
+     /* --f-body: 'IM Fell English', Palatino, 'Book Antiqua', Georgia, serif;*/
     --f-ui:   'Cinzel', Palatino, serif;
     --f-mono: 'Courier New', Courier, monospace;
 
