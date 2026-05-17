@@ -671,11 +671,23 @@
                 }
                 
                 if (concept.altLabel?.length > 0) {
+                    let altLabelsHtml = '';
+                    if (this.metadata.alternative_labels_external_url) {
+                        for (let i = 0; i < concept.altLabel.length; i++) {
+                            let searchUrl = this.metadata.alternative_labels_external_url.replace('{id}', encodeURIComponent(concept.altLabel[i]));
+                            if (!searchUrl.startsWith('http://') && !searchUrl.startsWith('https://')) {
+                                searchUrl = 'https://' + searchUrl;
+                            }
+                            altLabelsHtml += `${concept.altLabel[i]}<sup><a href="${searchUrl}" target="_blank" style="text-decoration: none; font-size: 0.9em;">↗</a></sup>, `;
+                          }               
+                    } else {
+                        altLabelsHtml = concept.altLabel.join(', ')
+                    }
                     html += `
                         <div class="concept-section">
                             <div class="section-title">${this.translations.altLabels}:</div>
                             <div class="section-content">
-                                ${concept.altLabel.join(', ')}
+                                ${altLabelsHtml}
                             </div>
                         </div>
                     `;

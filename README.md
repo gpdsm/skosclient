@@ -9,6 +9,7 @@ A lightweight tool for building client-side web interfaces for SKOS vocabularies
 - 🔍 **Full-text search** - Fast label-based search with autocomplete
 - 📱 **Responsive design** - Works on desktop and mobile devices
 - ⚡ **Optimized performance** - JSON-based data structure for fast loading
+- 🔒 **Privacy** - All the query are performed client-side: no logs of the terms searched.
 
 ## Installation
 
@@ -128,15 +129,17 @@ The generated `thesaurus_metadata.json` file can be customized:
 
 ### Styling
 
-Edit the CSS in `index.html` to customize the appearance. The application uses a classic academic style by default but can be easily adapted.
+In the styles folder there are additional styles, you can copy and paste on the outpufolder.
 
 ### Translations
 
-Add new interface languages by creating `ui_translations_{lang}.json` files with translations for UI elements.
+Add new interface languages by creating `ui_translations_{lang}.json` files with translations for UI elements. Please summit a pull request if the translation is not available.
 
-### Template
-
-Use your own HTML template by creating an `index.template.html` file before running SKOSClient.
+### Linking with other search services
+Skosclient allows you to perform an external search on linked coropora,for concepts and alternative lables using `{id}` as a placeholder for the id of the concept or the alternative label.
+```
+skosclient  .\dismi_vocabolario.ttl --concept-external-search-url "https://www.google.com/search?q={id}"   --alternative-labels-external-url "https://www.google.com/search?q={id}"
+```
 
 ## Browser Support
 
@@ -144,15 +147,6 @@ Use your own HTML template by creating an `index.template.html` file before runn
 - Firefox 88+
 - Safari 14+
 - Any browser with ES6+ and `Intl.DisplayNames` support
-
-## Deployment
-
-The generated application is static and can be deployed to:
-- Apache/Nginx web servers
-- GitHub Pages
-- Netlify, Vercel, or similar CDN services
-- Amazon S3 + CloudFront
-- Any static file hosting service
 
 ## Contributing
 
