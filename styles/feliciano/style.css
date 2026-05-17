@@ -14,9 +14,9 @@
 
 :root {
     /* Palette — da miniatura quattrocentesca */
-    --perg:        #ffffff;   /* fondo pergamena */
-    --perg-ombra:  #f8f8f8;   /* pergamena più scura */
-    --perg-scura:  #fff4f4;   /* rigatura */
+    --perg:        #fffef8;   /* fondo pergamena */
+    --perg-ombra:  #fcfcfb;   /* pergamena più scura */
+    --perg-scura:  #faf2f2;   /* rigatura */
     --rosso:       #9b2319;   /* rosso rubricato */
     --rosso-vivo:  #c0311f;   /* rosso acceso */
     --azzurro:     #1e4b8f;   /* azzurro oltremare */
@@ -30,7 +30,7 @@
 
     /* Tipografia */
     --f-tit:  'Cinzel', 'Trajan Pro', 'Times New Roman', serif;
-    --f-body: 'IM Fell English', Palatino, 'Book Antiqua', Georgia, serif;
+     /* --f-body: 'IM Fell English', Palatino, 'Book Antiqua', Georgia, serif;*/
     --f-ui:   'Cinzel', Palatino, serif;
     --f-mono: 'Courier New', Courier, monospace;
 
@@ -552,6 +552,83 @@ h1 {
     font-size: 0.85rem;
 }
 
+/* Additional styles for grouped results */
+.results-group {
+    margin-bottom: 12px;
+}
+
+.results-group-title {
+    background: #f0f0f0;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #ddd;
+    margin-bottom: 2px;
+}
+
+.results-group-items {
+    display: grid;
+    gap: 0;
+}
+
+/* Different styles for different label types */
+.concept-item.label-preferred {
+    /* Default style - preferred labels */
+}
+
+.concept-item.label-alternative {
+    font-style: italic;
+    color: #666;
+}
+        
+.concept-item.label-hidden {
+    color: #888;
+}
+
+/* Metadata display styles */
+.metadata-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 16px;
+    color: #333;
+    border-bottom: 2px solid #4a90d9;
+    padding-bottom: 8px;
+}
+
+.metadata-section {
+    margin-bottom: 12px;
+}
+
+.metadata-label {
+    font-weight: 600;
+    color: #555;
+    font-size: 0.85rem;
+    margin-bottom: 2px;
+}
+
+.metadata-value {
+    color: #333;
+}
+
+.metadata-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 4px;
+}
+
+.metadata-stats div {
+    font-size: 0.85rem;
+    color: #555;
+}
+
+
 /* ── Scrollbar ── */
 
 .list-content::-webkit-scrollbar,
@@ -601,3 +678,4 @@ h1 {
     .concept-items-grid { grid-template-columns: 1fr; }
     body { background-image: none; }
 }
+
