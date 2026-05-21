@@ -141,6 +141,11 @@ Skosclient allows you to perform an external search on linked coropora,for conce
 skosclient  .\dismi_vocabolario.ttl --concept-external-search-url "https://www.google.com/search?q={id}"   --alternative-labels-external-url "https://www.google.com/search?q={id}"
 ```
 
+```
+skosclient  .\dismi_vocabolario.ttl --concept-external-search-url "http://127.0.0.1:5000/?type=concept&q={id}"   --alternative-labels-external-url "http://127.0.0.1:5000/?type=alternativeLabel&q={id}"
+```
+
+
 ## Browser Support
 
 - Chrome/Edge 90+

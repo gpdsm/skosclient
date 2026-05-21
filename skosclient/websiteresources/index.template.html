@@ -304,6 +304,15 @@
                     }
                 }
                 
+                // Show acknowledgement
+                if (this.metadata?.acknowledgement && typeof this.metadata.acknowledgement === 'object') {
+                    const acknowledgement = this.metadata.acknowledgement[this.currentLanguage] || 
+                                        this.metadata.acknowledgement[this.currentUILanguage] || 
+                                        this.metadata.acknowledgement["no-lang"];
+                    if (acknowledgement) {
+                        html += `<div class="metadata-section"><small>${acknowledgement}</small></div>`;
+                    }
+                }
                 detailContainer.innerHTML = html;
             }
 

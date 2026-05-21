@@ -93,6 +93,9 @@ class SKOSExtractor:
         metadata = self._extract_metadata(languages, no_lang_analysis, input_file)
         metadata["concept_external_search_url"] = concept_external_search_url
         metadata["alternative_labels_external_url"] = alternative_labels_external_url
+        # We add additional options for akwnoledgments
+        metadata["acknowledgement"] = ""
+        metadata["acknowledgement_logo_path"] = ""
         # Process each language
         all_stats = {}
         total_relations_added = {"broader_from_narrower": 0, "narrower_from_broader": 0, "related_symmetric": 0}
