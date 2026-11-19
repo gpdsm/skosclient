@@ -160,3 +160,6 @@ Contributions are welcome! Please open an issue or submit a pull request on GitH
 ## Support
 
 For issues and questions, please use the [GitHub issue tracker](https://github.com/gpdsm/skosclient/issues).
+
+## Founding 
+Skosclient was developed during Forms of Italian Poetry project supported by the _Fondazione Cassa di Risparmio di Padova e Rovigo_ as part of the "Ricerca Scientifica di Eccellenza 2023" project.
